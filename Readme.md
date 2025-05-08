@@ -13,12 +13,16 @@ Enable LLM workflows that run in response to Github events, such as Issues, or c
   - [ ] Trigger definition
   - [ ] Action definition (specify instructions, model, tools, etc)
 - [ ] Write code for evaluating github events against agentRules and executing the agent with the right instructions/tools
-- [ ] Integrate git & filesystem to allow the agent to write code and commit
-- [ ] Integrate puppeteer to allow the agent to use a browser (expose to user as boolean flag)
-- [ ] Allow github-agent users to configure additional MCP tools to be made available to the LLM
+- [ ] Integrate git & filesystem to allow the agent to write code and commit (https://github.com/modelcontextprotocol/servers/tree/main/src/filesystem, https://github.com/modelcontextprotocol/servers/tree/main/src/git)
 - [ ] Integrate octokit to allow the agent to update issues and send PRs; expose only create_issue, create_pull_request, create_branch, update_issue, add_issue_comment, create_pull_request_review, get_pull_request, get_pull_request_reviews (as defined in https://github.com/modelcontextprotocol/servers/tree/main/src/github)
 - [ ] Deploy to github as an action so that other repos can reference it
 - [ ] Create a sample workflow for triggering the agent
+
+## Backlog
+
+- [ ] Integrate puppeteer to allow the agent to use a browser https://github.com/modelcontextprotocol/servers/tree/main/src/puppeteer
+- [ ] Integrate docker to allow the agent to run local development containers https://github.com/ckreiling/mcp-server-docker
+- [ ] Allow github-agent end users to configure additional MCP tools to be made available to the LLM
 
 ## Typical use cases
 
@@ -43,10 +47,3 @@ MCP client https://github.com/punkpeye/mcp-client (used for coordinating all the
 OpenRouter REST API https://openrouter.ai/docs/api-reference/overview (we will figure out which models work best with this workflow; claude 3.7 sonnet, o3, and o4-mini are likely contenders)
 
 Octokit https://github.com/octokit/octokit.js (for github interactions)
-
-## MCP servers to use
-
-filesystem https://github.com/modelcontextprotocol/servers/tree/main/src/filesystem
-git https://github.com/modelcontextprotocol/servers/tree/main/src/git
-browser https://github.com/modelcontextprotocol/servers/tree/main/src/puppeteer
-(we will also allow access to certain github actions using octokit, but we will not enable a full github MCP)

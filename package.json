@@ -4,6 +4,9 @@
   "main": "index.js",
   "type": "module",
   "license": "MIT",
+  "scripts": {
+    "agent": "node scripts/run-agent.js"
+  },
   "dependencies": {
     "yargs": "^17.7.2"
   }
