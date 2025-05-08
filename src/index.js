@@ -6,7 +6,7 @@ import Mustache from 'mustache';
 
 const FILE_PREFIX = 'file://';
 
-function getInstructions(instructionsInput) {
+export function getInstructions(instructionsInput) {
   if (instructionsInput.startsWith(FILE_PREFIX)) {
     const filePath = instructionsInput.substring(FILE_PREFIX.length);
     return fs.readFileSync(filePath, 'utf8');
