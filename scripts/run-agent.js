@@ -5,6 +5,10 @@
 
 import yargs from 'yargs/yargs';
 import { hideBin } from 'yargs/helpers';
+import { generateChatCompletion } from '../src/openrouter.js';
+
+import dotenv from 'dotenv';
+dotenv.config();
 
 const argv = yargs(hideBin(process.argv))
   .option('instructions', {
@@ -15,12 +19,10 @@ const argv = yargs(hideBin(process.argv))
   .option('tools', {
     type: 'string',
     describe: 'Comma-separated list of tools to enable',
-    demandOption: true,
   })
   .option('model', {
     type: 'string',
     describe: 'Model to use for LLM completions',
-    demandOption: true,
   })
   .help()
   .argv;
@@ -29,4 +31,16 @@ console.log('Running Github Agent with:');
 console.log('Instructions:', argv.instructions);
 console.log('Tools:', argv.tools);
 console.log('Model:', argv.model);
-// TODO: Initialize agent and run with specified instructions/tools/model 
+
+(async () => {
+  const messages = [
+    { role: 'user', content: argv.instructions }
+  ];
+  // TODO: Wire up the tools argument
+  const result = await generateChatCompletion({
+    messages,
+    model: argv.model,
+  });
+  console.log('LLM Result:');
+  console.dir(result, { depth: null });
+})(); 

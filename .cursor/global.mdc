@@ -5,4 +5,6 @@ alwaysApply: true
 ---
 All code should be ES6 javascript, NEVER typescript, NEVER commonjs.
 
-Always check Readme.md to see what we are working on. When each task is completed, ask the user for verification, and then update Readme.md to reflect the newest state.
+Always check Readme.md in the TODO list to see what we are working on. When each task is completed, ask the user for verification, and then update Readme.md to reflect the newest state.
+
+Wherever possible, keep all configs in package.json, instead of creating separate config files.
