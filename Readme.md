@@ -8,7 +8,7 @@ Enable LLM workflows that run in response to Github events, such as Issues, or c
 
 - [x] Write a simple script for running the agent with specified instructions/tools
 - [x] Integrate openrouter for generating LLM completions
-- [ ] Connect openrouter to mcp-client, fetch list of tools and facilitate tool calls
+- [x] Connect openrouter to mcp-client, fetch list of tools and facilitate tool calls
 - [ ] Define and document agentRules.json format
   - [ ] Trigger definition
   - [ ] Action definition (specify instructions, model, tools, etc)

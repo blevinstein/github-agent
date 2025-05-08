@@ -17,10 +17,7 @@ export async function generateChatCompletion({
   if (!OPENROUTER_API_KEY) throw new Error('Missing OPENROUTER_API_KEY in environment');
 
   if (mcpClient) {
-    console.log('Derive tools and toolCallbacks from mcpClient')
     const mcpTools = await mcpClient.getAllTools();
-
-    console.log(`${mcpTools.length} tools found`);
 
     // Convert MCP tools to OpenAI tool format
     tools = [
