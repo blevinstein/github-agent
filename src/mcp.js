@@ -6,9 +6,11 @@ export class MultiClient {
     this.servers = servers;
   }
 
-  static async create(servers) {
+  static async create(servers, waitTime = 1000) {
     const client = new MultiClient(servers);
     await client.connect();
+    // More reliable if we give the servers a bit to become ready
+    await new Promise(resolve => setTimeout(resolve, waitTime));
     return client;
   }
 

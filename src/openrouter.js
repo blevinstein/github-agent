@@ -2,6 +2,23 @@ import fetch from 'node-fetch';
 
 const DEFAULT_MODEL = 'anthropic/claude-3.7-sonnet';
 
+export const DEFAULT_SERVERS = [
+  { name: 'filesystem', type: 'stdio', command: 'npx', args: [ '-y', '@modelcontextprotocol/server-filesystem', '.' ] },
+  {
+    name: 'git',
+    type: 'stdio',
+    command: 'docker',
+    args: [
+      'run',
+      '--rm',
+      '-i',
+      '--mount',
+      `type=bind,src=${process.cwd()},dst=/workspace`,
+      'mcp/git'
+    ]
+  },
+]
+
 // TODO: Add context management
 // TODO: Add cost calculation
 export async function generateChatCompletion({
