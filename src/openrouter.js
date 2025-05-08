@@ -3,7 +3,12 @@ import fetch from 'node-fetch';
 const DEFAULT_MODEL = 'anthropic/claude-3.7-sonnet';
 
 export const DEFAULT_SERVERS = [
-  { name: 'filesystem', type: 'stdio', command: 'npx', args: [ '-y', '@modelcontextprotocol/server-filesystem', '.' ] },
+  {
+    name: 'filesystem',
+    type: 'stdio',
+    command: 'npx',
+    args: [ '-y', '@modelcontextprotocol/server-filesystem', '.' ],
+  },
   {
     name: 'git',
     type: 'stdio',
@@ -16,7 +21,7 @@ export const DEFAULT_SERVERS = [
       `type=bind,src=${process.cwd()},dst=/workspace`,
       'mcp/git'
     ]
-  },
+  }
 ]
 
 // TODO: Add context management

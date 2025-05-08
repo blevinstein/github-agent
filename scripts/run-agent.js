@@ -5,8 +5,8 @@
 
 import yargs from 'yargs/yargs';
 import { hideBin } from 'yargs/helpers';
-import { generateChatCompletion } from '../src/openrouter.js';
-import { getMcpClient } from '../src/mcp.js';
+import { generateChatCompletion, DEFAULT_SERVERS } from '../src/openrouter.js';
+import { MultiClient } from '../src/mcp.js';
 
 import dotenv from 'dotenv';
 dotenv.config();
@@ -37,7 +37,15 @@ console.log('Model:', argv.model);
   const messages = [
     { role: 'user', content: argv.instructions }
   ];
-  const mcpClient = await getMcpClient();
+  const mcpClient = await MultiClient.create([
+    ...DEFAULT_SERVERS,
+    {
+      name: 'time',
+      type: 'stdio',
+      command: 'docker',
+      args: ["run", "-i", "--rm", "mcp/time"]
+    }
+  ]);
   const result = await generateChatCompletion({
     messages,
     model: argv.model,
