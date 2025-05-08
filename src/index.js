@@ -6,16 +6,18 @@ import Mustache from 'mustache';
 
 const FILE_PREFIX = 'file://';
 
+function getInstructions(instructionsInput) {
+  if (instructionsInput.startsWith(FILE_PREFIX)) {
+    const filePath = instructionsInput.substring(FILE_PREFIX.length);
+    return fs.readFileSync(filePath, 'utf8');
+  }
+  return instructionsInput;
+}
+
 async function main() {
   try {
-    const instructionsInput = core.getInput('instructions', { required: true });
-    const model = core.getInput('model', { required: true });
-
-    let instructions = instructionsInput;
-    if (instructionsInput.startsWith(FILE_PREFIX)) {
-      const filePath = instructionsInput.substring(FILE_PREFIX.length);
-      instructions = fs.readFileSync(filePath, 'utf8');
-    }
+    const model = core.getInput('model');
+    const instructions = getInstructions(core.getInput('instructions', { required: true }));
 
     // Gather event context from the GitHub Actions environment
     const githubEventPath = process.env.GITHUB_EVENT_PATH;
