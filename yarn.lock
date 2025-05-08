@@ -341,6 +341,11 @@ assertion-error@^1.1.0:
   resolved "https://registry.yarnpkg.com/assertion-error/-/assertion-error-1.1.0.tgz#e60b6b0e8f301bd97e5375215bda406c85118c0b"
   integrity sha512-jgsaNduz+ndvGyFt3uSuWqvy4lCnIJiovtouQN5JZHOKCS2QuhEdbcQHFhVksz2N2U9hXJo8odG7ETyWlEeuDw==
 
+async@^3.2.6:
+  version "3.2.6"
+  resolved "https://registry.yarnpkg.com/async/-/async-3.2.6.tgz#1b0728e14929d51b85b449b7f06e27c1145e38ce"
+  integrity sha512-htCUDlxyyCLMgaM3xXg0C0LW2xqfuQ6p05pCEIsXuyQ+a1koYKTuBMzRNwmybfLgvJDMd0r1LTn4+E0Ti6C2AA==
+
 body-parser@^2.2.0:
   version "2.2.0"
   resolved "https://registry.yarnpkg.com/body-parser/-/body-parser-2.2.0.tgz#f7a9656de305249a715b549b7b8fd1ab9dfddcfa"
@@ -846,9 +851,10 @@ math-intrinsics@^1.1.0:
   resolved "https://registry.yarnpkg.com/math-intrinsics/-/math-intrinsics-1.1.0.tgz#a0dd74be81e2aa5c2f27e65ce283605ee4e2b7f9"
   integrity sha512-/IXtbwEk5HTPyEwyKX6hGkYXxM9nbj64B+ilVJnC/R6B0pH5G4V3b0pVbL7DBj4tkhBAppbQUlf6F6Xl9LHu1g==
 
-mcp-client@punkpeye/mcp-client:
-  version "1.0.0"
-  resolved "https://codeload.github.com/punkpeye/mcp-client/tar.gz/f3273393432dfea3ea6fbbf71196f8ba2f92d59c"
+mcp-client@^1.12.3:
+  version "1.12.3"
+  resolved "https://registry.yarnpkg.com/mcp-client/-/mcp-client-1.12.3.tgz#63f2ef5c8202bc40fe8d0b4e029aa053872b9039"
+  integrity sha512-+VNnGLZHFUYndw2DFe9qtQ3G3dFca8VzOngu4OjfxZyGsOfqj+AFRXslsxh5yHCk6pvov0IGsOgXePg48/+Rgw==
   dependencies:
     "@modelcontextprotocol/sdk" "^1.10.1"
     reconnecting-eventsource "^1.6.4"

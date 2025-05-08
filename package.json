@@ -9,8 +9,9 @@
     "test": "vitest run"
   },
   "dependencies": {
+    "async": "^3.2.6",
     "dotenv": "^16.5.0",
-    "mcp-client": "punkpeye/mcp-client",
+    "mcp-client": "^1.12.3",
     "node-fetch": "^3.3.2",
     "yargs": "^17.7.2"
   },
