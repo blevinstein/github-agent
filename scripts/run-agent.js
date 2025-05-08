@@ -6,6 +6,7 @@
 import yargs from 'yargs/yargs';
 import { hideBin } from 'yargs/helpers';
 import { generateChatCompletion } from '../src/openrouter.js';
+import { getMcpClient } from '../src/mcp.js';
 
 import dotenv from 'dotenv';
 dotenv.config();
@@ -36,10 +37,11 @@ console.log('Model:', argv.model);
   const messages = [
     { role: 'user', content: argv.instructions }
   ];
-  // TODO: Wire up the tools argument
+  const mcpClient = await getMcpClient();
   const result = await generateChatCompletion({
     messages,
     model: argv.model,
+    mcpClient,
   });
   console.log('LLM Result:');
   console.dir(result, { depth: null });
