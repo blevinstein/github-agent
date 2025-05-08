@@ -1,0 +1,16 @@
+name: 'Github Agent'
+description: 'Run an LLM agent in response to GitHub events, with mustache-templated instructions.'
+author: 'blevinstein'
+inputs:
+  instructions:
+    description: 'Path to a file (e.g., file://fix-issue.txt) or inline string with instructions. Supports mustache.js templating with event context.'
+    required: true
+  model:
+    description: 'LLM model to use.'
+    required: true
+runs:
+  using: 'node20'
+  main: 'src/index.js'
+branding:
+  icon: 'zap'
+  color: 'blue' 

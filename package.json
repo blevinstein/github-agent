@@ -12,7 +12,7 @@
     "async": "^3.2.6",
     "dotenv": "^16.5.0",
     "mcp-client": "^1.12.3",
-    "mustache.js": "^1.0.0",
+    "mustache": "^4.2.0",
     "node-fetch": "^3.3.2",
     "yargs": "^17.7.2"
   },

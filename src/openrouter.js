@@ -7,7 +7,7 @@ export const DEFAULT_SERVERS = [
     name: 'filesystem',
     type: 'stdio',
     command: 'npx',
-    args: [ '-y', '@modelcontextprotocol/server-filesystem', '.' ],
+    args: [ '-y', '@modelcontextprotocol/server-filesystem', process.cwd() ],
   },
   {
     name: 'git',
