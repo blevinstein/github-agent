@@ -1,9 +1,0 @@
-{
-  "mcpServers": {
-    "github": {
-      "name": "github",
-      "command": "node",
-      "args": ["./mcp-servers/github/index.js"]
-    }
-  }
-}
