@@ -9,13 +9,13 @@ Enable LLM workflows that run in response to Github events, such as Issues, or c
 - [x] Write a simple script for running the agent with specified instructions/tools
 - [x] Integrate openrouter for generating LLM completions
 - [x] Connect openrouter to mcp-client, fetch list of tools and facilitate tool calls
-- [ ] Define and document agentRules.json format
+- [x] Define and document agentRules.json format
   - [x] Trigger definition
   - [x] Action definition (specify instructions, model, tools, etc)
-  - [ ] Integrate mustache.js for instruction template rendering
-  - [ ] Allow file:// syntax for instructions field in agentsRule.json
-- [ ] Create a sample workflow for triggering the agent (pass along github.event, github.ref_name, github.ref_type to the agent code)
-- [ ] Write code for evaluating github events against agentRules and executing the agent with the right instructions/tools
+  - [x] Integrate mustache.js for instruction template rendering
+  - [x] Allow file:// syntax for instructions field in agentsRule.json
+- [x] Create a sample workflow for triggering the agent (pass along github.event, github.ref_name, github.ref_type to the agent code)
+- [x] Write code for evaluating github events against agentRules and executing the agent with the right instructions/tools
 - [x] Integrate git & filesystem to allow the agent to write code and commit (https://github.com/modelcontextprotocol/servers/tree/main/src/filesystem, https://github.com/modelcontextprotocol/servers/tree/main/src/git)
 - [ ] Integrate octokit to allow the agent to update issues and send PRs; expose only create_issue, create_pull_request, create_branch, update_issue, add_issue_comment, create_pull_request_review, get_pull_request, get_pull_request_reviews (as defined in https://github.com/modelcontextprotocol/servers/tree/main/src/github)
   - [ ] OR just expose a subset of the github MCP?
