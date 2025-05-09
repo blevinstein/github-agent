@@ -2,24 +2,18 @@ import async from 'async';
 import { MCPClient } from 'mcp-client';
 
 export class MultiClient {
-  constructor(servers) {
-    this.servers = servers;
+  constructor(clients) {
+    this.clients = clients;
   }
 
   static async create(servers, waitTime = 1000) {
-    const client = new MultiClient(servers);
-    await client.connect();
-    // More reliable if we give the servers a bit to become ready
-    await new Promise(resolve => setTimeout(resolve, waitTime));
-    return client;
-  }
-
-  async connect() {
-    this.clients = await Promise.all(this.servers.map(async server => {
-      const newClient = new MCPClient({ name: `github-agent-${server.name}`, version: '0.1.0' });
+    const clients = await Promise.all(servers.map(async server => {
+      const newClient = new MCPClient({ name: server.name, version: '0.1.0' });
       await newClient.connect(server);
       return newClient;
     }));
+    await new Promise(resolve => setTimeout(resolve, waitTime));
+    return new MultiClient(clients);
   }
 
   async getAllTools() {
@@ -30,6 +24,7 @@ export class MultiClient {
   }
 
   async callTool({ name, arguments: args }) {
+    // TODO: Optimize so that we don't call getAllTools() for each client every time
     const server = await async.detect(this.clients,
         async client => (await client.getAllTools()).some(tool => tool.name === name));
     if (!server) throw Error(`Tool ${name} not found`);
