@@ -4,12 +4,17 @@
   "main": "index.js",
   "type": "module",
   "license": "MIT",
+  "bin": {
+    "github-mcp-server": "./bin/github-mcp-server.js"
+  },
   "scripts": {
     "agent": "node scripts/run-agent.js",
-    "test": "vitest run"
+    "test": "vitest run",
+    "start-github-mcp-server": "node mcp-servers/github/index.js"
   },
   "dependencies": {
     "@actions/core": "^1.11.1",
+    "@modelcontextprotocol/sdk": "^1.0.0",
     "async": "^3.2.6",
     "dotenv": "^16.5.0",
     "mcp-client": "^1.12.3",
