@@ -75,16 +75,20 @@ const GITHUB_TOOLS = [
 // Tool handlers
 async function handleGetIssue(args) {
   const { owner, repo, issue_number } = args;
-  const response = await octokit.rest.issues.get({
-    owner,
-    repo,
-    issue_number
-  });
-  
+  // Fetch issue details and comments in parallel
+  const [issueResponse, commentsResponse] = await Promise.all([
+    octokit.rest.issues.get({ owner, repo, issue_number }),
+    octokit.rest.issues.listComments({ owner, repo, issue_number })
+  ]);
+  // Combine data
+  const combined = {
+    ...issueResponse.data,
+    comments_thread: commentsResponse.data
+  };
   return {
     content: [{
       type: "text",
-      text: JSON.stringify(response.data, null, 2)
+      text: JSON.stringify(combined, null, 2)
     }]
   };
 }
