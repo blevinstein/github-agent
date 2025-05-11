@@ -23,10 +23,10 @@ Enable LLM workflows that run in response to Github events, such as Issues, or c
   - [x] get_pull_request_reviews
   - [x] make sure the agent can get information about an issue
   - [x] make sure the agent can get information about a PR
+  - [x] add_issue_comment
+  - [ ] create_pull_request_review
   - [ ] create_pull_request
   - [ ] make sure the agent can push code to a new branch and create a PR
-  - [ ] add_issue_comment
-  - [ ] create_pull_request_review
   - [ ] update_issue
   - [ ] make sure the agent can close a fixed issue
   - [ ] make sure the agent can merge an approved PR

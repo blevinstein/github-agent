@@ -69,6 +69,20 @@ const GITHUB_TOOLS = [
       },
       required: ["owner", "repo", "pull_number"]
     }
+  },
+  {
+    name: "add_issue_comment",
+    description: "Add a comment to a GitHub issue",
+    inputSchema: {
+      type: "object",
+      properties: {
+        owner: { type: "string", description: "Repository owner" },
+        repo: { type: "string", description: "Repository name" },
+        issue_number: { type: "number", description: "Issue number" },
+        body: { type: "string", description: "Comment body" }
+      },
+      required: ["owner", "repo", "issue_number", "body"]
+    }
   }
 ];
 
@@ -113,6 +127,22 @@ async function handleGetPullRequest(args) {
   };
 }
 
+async function handleAddIssueComment(args) {
+  const { owner, repo, issue_number, body } = args;
+  const response = await octokit.rest.issues.createComment({
+    owner,
+    repo,
+    issue_number,
+    body
+  });
+  return {
+    content: [{
+      type: "text",
+      text: JSON.stringify(response.data, null, 2)
+    }]
+  };
+}
+
 const server = new Server(
   {
     name: "github-mcp",
@@ -142,6 +172,8 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
         return await handleGetIssue(args);
       case "get_pull_request":
         return await handleGetPullRequest(args);
+      case "add_issue_comment":
+        return await handleAddIssueComment(args);
       default:
         return {
           content: [{ type: "text", text: `Unknown tool: ${toolName}` }],
