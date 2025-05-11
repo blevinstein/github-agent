@@ -91,16 +91,20 @@ async function handleGetIssue(args) {
 
 async function handleGetPullRequest(args) {
   const { owner, repo, pull_number } = args;
-  const response = await octokit.rest.pulls.get({
-    owner,
-    repo,
-    pull_number
-  });
-  
+  // Fetch PR details and reviews in parallel
+  const [prResponse, reviewsResponse] = await Promise.all([
+    octokit.rest.pulls.get({ owner, repo, pull_number }),
+    octokit.rest.pulls.listReviews({ owner, repo, pull_number })
+  ]);
+  // Combine data
+  const combined = {
+    ...prResponse.data,
+    reviews: reviewsResponse.data
+  };
   return {
     content: [{
       type: "text",
-      text: JSON.stringify(response.data, null, 2)
+      text: JSON.stringify(combined, null, 2)
     }]
   };
 }

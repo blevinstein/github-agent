@@ -20,7 +20,7 @@ Enable LLM workflows that run in response to Github events, such as Issues, or c
 - [ ] Implement a custom MCP using octokit to allow the agent to update issues and send PRs
   - [x] get_issue
   - [x] get_pull_request
-  - [ ] get_pull_request_reviews
+  - [x] get_pull_request_reviews
   - [ ] make sure the agent can get information about an issue
   - [ ] make sure the agent can get information about a PR
   - [ ] create_pull_request
