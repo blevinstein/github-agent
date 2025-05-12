@@ -33,6 +33,7 @@ jobs:
         if: github.event_name == 'issues' && github.event.label.name == 'fixme'
         uses: blevinstein/github-agent@main
         with:
+          treat_reply_as_comment: true
           instructions: |
             The following issue has been labeled 'fixme':
             Title: {{issue.title}}
@@ -44,6 +45,7 @@ jobs:
         if: github.event_name == 'pull_request' && github.event.label.name == 'reviewme'
         uses: blevinstein/github-agent@main
         with:
+          treat_reply_as_comment: true
           instructions: |
             The following pull request has been labeled 'reviewme':
             Title: {{pull_request.title}}
@@ -55,6 +57,7 @@ jobs:
         if: github.event_name == 'issue_comment' && github.event.issue.pull_request && contains(github.event.issue.labels.*.name, 'github-agent')
         uses: blevinstein/github-agent@main
         with:
+          treat_reply_as_comment: true
           instructions: |
             A new comment was posted on a pull request created by the agent:
             PR Title: {{issue.title}}
