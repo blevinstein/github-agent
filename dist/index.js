@@ -43633,7 +43633,7 @@ async function generateChatCompletion({
     const data = await response.json();
     logger?.info(`OpenRouter response: ${JSON.stringify(data, null, 2)}`);
     if (data.error) {
-      logger?.debug(`OpenRouter API error: ${JSON.stringify(data.error, null, 2)}\nInput was: ${JSON.stringify(messages, null, 2)}`);
+      logger?.debug(`OpenRouter API error: ${JSON.stringify(data.error, null, 2)}\nInput was: ${JSON.stringify([...messages, ...responseMessages], null, 2)}`);
       throw new Error(`OpenRouter API error: ${JSON.stringify(data.error, null, 2)}`);
     }
     const newMessage = data.choices[0].message;
