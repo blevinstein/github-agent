@@ -17,7 +17,7 @@ Enable LLM workflows that run in response to Github events, such as Issues, or c
 - [x] Create a sample workflow for triggering the agent (pass along github.event, github.ref_name, github.ref_type to the agent code)
 - [x] Write code for evaluating github events against agentRules and executing the agent with the right instructions/tools
 - [x] Integrate git & filesystem to allow the agent to write code and commit (https://github.com/modelcontextprotocol/servers/tree/main/src/filesystem, https://github.com/modelcontextprotocol/servers/tree/main/src/git)
-- [ ] Implement a custom MCP using octokit to allow the agent to update issues and send PRs
+- [x] Implement a custom MCP using octokit to allow the agent to update issues and send PRs
   - [x] get_issue
   - [x] get_pull_request
   - [x] get_pull_request_reviews
@@ -29,10 +29,10 @@ Enable LLM workflows that run in response to Github events, such as Issues, or c
   - [x] make sure the agent can push code to a new branch and create a PR
   - [x] update_issue
   - [x] make sure the agent can close a fixed issue
-  - [ ] make sure the agent can close a PR
-  - [ ] make sure the agent can merge an approved PR
+  - [x] make sure the agent can close a PR
+  - [x] make sure the agent can merge an approved PR
   - [x] make sure the agent can review a PR
-  - [ ] make sure the agent can update a PR in response to comments (both new commits, and changing title/description/assignee/etc)
+  - [x] make sure the agent can update a PR in response to comments (both new commits, and changing title/description/assignee/etc)
 - [ ] Deploy to github as an action so that other repos can reference it
 - [ ] Add system prompt for directing behavior of the agent
 
