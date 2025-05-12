@@ -22,6 +22,9 @@ jobs:
       GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
     steps:
       - uses: actions/checkout@v4
+      - name: Prefetch npx dependencies
+        run: |
+          npm install -g blevinstein-github-agent @modelcontextprotocol/server-filesystem @cyanheads/git-mcp-server
       - name: Set up Git user for commits
         run: |
           git config --global user.name "github-actions[bot]"
@@ -53,6 +56,9 @@ jobs:
       GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
     steps:
       - uses: actions/checkout@v4
+      - name: Prefetch npx dependencies
+        run: |
+          npm install -g blevinstein-github-agent @modelcontextprotocol/server-filesystem @cyanheads/git-mcp-server
       - name: Set up Git user for commits
         run: |
           git config --global user.name "github-actions[bot]"
@@ -83,6 +89,9 @@ jobs:
       GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
     steps:
       - uses: actions/checkout@v4
+      - name: Prefetch npx dependencies
+        run: |
+          npm install -g blevinstein-github-agent @modelcontextprotocol/server-filesystem @cyanheads/git-mcp-server
       - name: Set up Git user for commits
         run: |
           git config --global user.name "github-actions[bot]"
@@ -114,6 +123,9 @@ jobs:
       GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
     steps:
       - uses: actions/checkout@v4
+      - name: Prefetch npx dependencies
+        run: |
+          npm install -g blevinstein-github-agent @modelcontextprotocol/server-filesystem @cyanheads/git-mcp-server
       - name: Set up Git user for commits
         run: |
           git config --global user.name "github-actions[bot]"
