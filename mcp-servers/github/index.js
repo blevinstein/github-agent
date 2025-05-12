@@ -110,14 +110,15 @@ const GITHUB_TOOLS = [
         title: { type: "string", description: "Title of the pull request" },
         head: { type: "string", description: "The name of the branch where your changes are implemented (compare)" },
         base: { type: "string", description: "The name of the branch you want the changes pulled into (e.g., main)" },
-        body: { type: "string", description: "Body of the pull request" }
+        body: { type: "string", description: "Body of the pull request" },
+        reviewers: { type: "array", items: { type: "string" }, description: "Usernames of reviewers to request" }
       },
       required: ["owner", "repo", "title", "head", "base"]
     }
   },
   {
     name: "update_issue",
-    description: "Update a GitHub issue (labels, title, body, state)",
+    description: "Update a GitHub issue",
     inputSchema: {
       type: "object",
       properties: {
@@ -125,6 +126,7 @@ const GITHUB_TOOLS = [
         repo: { type: "string", description: "Repository name" },
         issue_number: { type: "number", description: "Issue number" },
         labels: { type: "array", items: { type: "string" }, description: "Labels to set on the issue" },
+        assignees: { type: "array", items: { type: "string" }, description: "Usernames of assignees for the issue" },
         title: { type: "string", description: "New title for the issue" },
         body: { type: "string", description: "New body for the issue" },
         state: { type: "string", description: "State (open or closed)" }
@@ -163,7 +165,7 @@ const GITHUB_TOOLS = [
   },
   {
     name: "update_pull_request",
-    description: "Update a pull request (title, body, assignees, etc)",
+    description: "Update a pull request",
     inputSchema: {
       type: "object",
       properties: {
@@ -172,10 +174,29 @@ const GITHUB_TOOLS = [
         pull_number: { type: "number", description: "Pull request number" },
         title: { type: "string", description: "New title for the PR" },
         body: { type: "string", description: "New body for the PR" },
-        assignees: { type: "array", items: { type: "string" }, description: "Assignees for the PR" },
-        state: { type: "string", description: "State (open or closed)" }
+        state: { type: "string", description: "State (open or closed)" },
+        base: { type: "string", description: "Change the base branch (the destination that these changes will be merged to)" },
+        labels: { type: "array", items: { type: "string" }, description: "Labels to set on the PR" },
+        assignees: { type: "array", items: { type: "string" }, description: "Usernames of assignees for the PR" },
+        reviewers: { type: "array", items: { type: "string" }, description: "Usernames of reviewers to request" }
       },
       required: ["owner", "repo", "pull_number"]
+    }
+  },
+  {
+    name: "create_issue",
+    description: "Create a new GitHub issue.",
+    inputSchema: {
+      type: "object",
+      properties: {
+        owner: { type: "string", description: "Repository owner" },
+        repo: { type: "string", description: "Repository name" },
+        title: { type: "string", description: "Title of the issue" },
+        body: { type: "string", description: "Body of the issue" },
+        assignees: { type: "array", items: { type: "string" }, description: "Usernames of assignees for the issue" },
+        labels: { type: "array", items: { type: "string" }, description: "Labels to set on the issue" }
+      },
+      required: ["owner", "repo", "title"]
     }
   }
 ];
@@ -255,7 +276,8 @@ async function handleCreatePullRequestReview(args) {
 }
 
 async function handleCreatePullRequest(args) {
-  const { owner, repo, title, head, base, body } = args;
+  const { owner, repo, title, head, base, body, reviewers } = args;
+  const results = [];
   const response = await octokit.rest.pulls.create({
     owner,
     repo,
@@ -264,18 +286,29 @@ async function handleCreatePullRequest(args) {
     base,
     body
   });
+  results.push({ type: "pull_request", result: response.data });
+  if (reviewers && reviewers.length) {
+    const reviewersResult = await octokit.rest.pulls.requestReviewers({
+      owner,
+      repo,
+      pull_number: response.data.number,
+      reviewers
+    });
+    results.push({ type: "reviewers", result: reviewersResult.data });
+  }
   return {
-    content: [{ type: "text", text: JSON.stringify(response.data, null, 2) }]
+    content: [{ type: "text", text: JSON.stringify(results, null, 2) }]
   };
 }
 
 async function handleUpdateIssue(args) {
-  const { owner, repo, issue_number, labels, title, body, state } = args;
+  const { owner, repo, issue_number, labels, assignees, title, body, state } = args;
   const response = await octokit.rest.issues.update({
     owner,
     repo,
     issue_number,
     ...(labels ? { labels } : {}),
+    ...(assignees ? { assignees } : {}),
     ...(title ? { title } : {}),
     ...(body ? { body } : {}),
     ...(state ? { state } : {})
@@ -314,15 +347,56 @@ async function handleMergePullRequest(args) {
 }
 
 async function handleUpdatePullRequest(args) {
-  const { owner, repo, pull_number, title, body, assignees, state } = args;
-  const response = await octokit.rest.pulls.update({
+  const { owner, repo, pull_number, title, body, state, base, labels, assignees, reviewers } = args;
+  const results = [];
+  // PR fields
+  if (title || body || state || base) {
+    const prResult = await octokit.rest.pulls.update({
+      owner,
+      repo,
+      pull_number,
+      ...(title ? { title } : {}),
+      ...(body ? { body } : {}),
+      ...(state ? { state } : {}),
+      ...(base ? { base } : {})
+    });
+    results.push({ type: "pull_request", result: prResult.data });
+  }
+  // Issue fields (labels/assignees)
+  if ((labels && labels.length) || (assignees && assignees.length)) {
+    const issueResult = await octokit.rest.issues.update({
+      owner,
+      repo,
+      issue_number: pull_number,
+      ...(labels ? { labels } : {}),
+      ...(assignees ? { assignees } : {})
+    });
+    results.push({ type: "issue", result: issueResult.data });
+  }
+  // Reviewers
+  if (reviewers && reviewers.length) {
+    const reviewersResult = await octokit.rest.pulls.requestReviewers({
+      owner,
+      repo,
+      pull_number,
+      reviewers
+    });
+    results.push({ type: "reviewers", result: reviewersResult.data });
+  }
+  return {
+    content: [{ type: "text", text: JSON.stringify(results, null, 2) }]
+  };
+}
+
+async function handleCreateIssue(args) {
+  const { owner, repo, title, body, assignees, labels } = args;
+  const response = await octokit.rest.issues.create({
     owner,
     repo,
-    pull_number,
-    ...(title ? { title } : {}),
+    title,
     ...(body ? { body } : {}),
     ...(assignees ? { assignees } : {}),
-    ...(state ? { state } : {})
+    ...(labels ? { labels } : {})
   });
   return {
     content: [{ type: "text", text: JSON.stringify(response.data, null, 2) }]
@@ -372,6 +446,8 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
         return await handleMergePullRequest(args);
       case "update_pull_request":
         return await handleUpdatePullRequest(args);
+      case "create_issue":
+        return await handleCreateIssue(args);
       default:
         return {
           content: [{ type: "text", text: `Unknown tool: ${toolName}` }],
