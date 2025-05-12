@@ -21,7 +21,7 @@ export const DEFAULT_SERVERS = [
     name: 'github',
     type: 'stdio',
     command: 'npx',
-    args: [ '-y', 'blevinstein-github-agent-mcp-server' ],
+    args: [ '-y', 'blevinstein-github-agent' ],
     env: {
       'GITHUB_TOKEN': await getGithubToken(),
     }
