@@ -43640,22 +43640,26 @@ async function generateChatCompletion({
         if (!(toolCall.function.name in toolCallbacks)) {
           continue;
         }
+        logger?.debug(`Calling tool ${toolCall.function.name} with arguments ${JSON.stringify(toolCall.function.arguments, null, 2)}`);
+        let toolResult;
         try {
           const args = JSON.parse(toolCall.function.arguments || '{}');
           const result = await toolCallbacks[toolCall.function.name](args);
-          responseMessages.push({
+          toolResult ={
             role: 'tool',
             tool_call_id: toolCall.id,
             content: typeof result === 'string' ? result : (JSON.stringify(result) || 'OK'),
-          });
+          };
         } catch (e) {
           logger?.error(`Error calling tool ${toolCall.function.name}: ${e.message}`);
-          responseMessages.push({
+          toolResult = {
             role: 'tool',
             tool_call_id: toolCall.id,
             content: `Error: ${e.message}`,
-          });
+          };
         }
+        logger?.debug(`Tool ${toolCall.function.name} result: ${JSON.stringify(toolResult, null, 2)}`);
+        responseMessages.push(toolResult);
       }
     }
   } while (finishReason === 'length' || finishReason === 'tool_calls');
