@@ -2,6 +2,7 @@ import fetch from 'node-fetch';
 
 const DEFAULT_MODEL = 'anthropic/claude-3.7-sonnet';
 
+// TODO: Move these somewhere that makes more sense
 export const DEFAULT_SERVERS = [
   {
     name: 'filesystem',
