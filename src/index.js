@@ -30,7 +30,8 @@ async function main() {
     let mcpServers = DEFAULT_SERVERS;
     const mcpServersInput = core.getInput('mcp_servers');
     if (mcpServersInput) {
-      const userServers = JSON.parse(mcpServersInput);
+      const userServers = Object.entries(JSON.parse(mcpServersInput))
+          .map(([name, config]) => ({ name, ...config }));
       mcpServers = [ ...DEFAULT_SERVERS, ...userServers ];
     }
 
