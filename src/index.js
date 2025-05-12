@@ -26,6 +26,14 @@ async function main() {
     const systemPrompt = systemPromptInput ? getInstructions(systemPromptInput) : DEFAULT_SYSTEM_PROMPT;
     const treatReplyAsComment = core.getInput('treat_reply_as_comment') === 'true';
 
+    // Support additional MCP servers via input
+    let mcpServers = DEFAULT_SERVERS;
+    const mcpServersInput = core.getInput('mcp_servers');
+    if (mcpServersInput) {
+      const userServers = JSON.parse(mcpServersInput);
+      mcpServers = [ ...DEFAULT_SERVERS, ...userServers ];
+    }
+
     // Gather event context from the GitHub Actions environment
     const githubEventPath = process.env.GITHUB_EVENT_PATH;
     let eventContext = {};
@@ -48,7 +56,7 @@ async function main() {
     ];
 
     core.debug('Creating MCP client');
-    const mcpClient = await MultiClient.create(DEFAULT_SERVERS);
+    const mcpClient = await MultiClient.create(mcpServers);
 
     core.debug('Generating chat completion:');
     core.debug(JSON.stringify(messages, null, 2));

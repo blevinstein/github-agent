@@ -21,6 +21,7 @@ jobs:
     if: |
       github.event.label.name == 'fixme' ||
       github.event.label.name == 'reviewme' ||
+      github.event.label.name == 'time_check' ||
       (github.event.issue.pull_request && github.event.comment && contains(github.event.issue.labels.*.name, 'github-agent'))
     steps:
       - name: Checkout code
@@ -66,3 +67,23 @@ jobs:
             Comment Body: {{comment.body}}
             Please update the PR or respond to the comment as appropriate, referencing the PR number in your response.
           model: anthropic/claude-3.7-sonnet
+      - name: Run Github Agent with time server MCP
+        if: github.event_name == 'issues' && github.event.label.name == 'time_check'
+        uses: blevinstein/github-agent@main
+        with:
+          treat_reply_as_comment: true
+          instructions: |
+            The following issue has been labeled 'time_check':
+            Title: {{issue.title}}
+            Number: {{issue.number}}
+            Body: {{issue.body}}
+            Please post a comment on this issue with the current time.
+          model: anthropic/claude-3.7-sonnet
+          mcp_servers: |
+            {
+              "time": {
+                "type": "stdio",
+                "command": "docker",
+                "args": ["run", "-i", "--rm", "mcp/time"]
+              }
+            }

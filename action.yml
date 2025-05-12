@@ -15,6 +15,9 @@ inputs:
     description: "If true, post the agent's text response as a comment on the triggering issue or PR."
     required: false
     default: 'false'
+  mcp_servers:
+    description: 'JSON string or file:// path specifying additional MCP server configs to use (optional). Example: |\n  {\n    "time": {\n      "type": "stdio",\n      "command": "docker",\n      "args": ["run", "-i", "--rm", "mcp/time"]\n    }\n  }'
+    required: false
 runs:
   using: 'node20'
   main: 'dist/index.js'

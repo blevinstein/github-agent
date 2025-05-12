@@ -17,6 +17,20 @@ To use the Github Agent in your repository:
 4. **Customize agent behavior:**
    - Edit the workflow YAML to change triggers, instructions, or models.
    - You can use mustache-style templating in the `instructions` field to reference GitHub event context.
+   - **Add MCP servers:** Use the `mcp_servers` input to provide additional MCP tool servers.
+
+   **Example (multi-line JSON):**
+   ```yaml
+   with:
+     mcp_servers: |
+       {
+         "time": {
+           "type": "stdio",
+           "command": "docker",
+           "args": ["run", "-i", "--rm", "mcp/time"]
+         }
+       }
+   ```
 
 ---
 
@@ -49,8 +63,8 @@ To use the Github Agent in your repository:
   - [x] make sure the agent can merge an approved PR
   - [x] make sure the agent can review a PR
   - [x] make sure the agent can update a PR in response to comments (both new commits, and changing title/description/assignee/etc)
-- [ ] Deploy to github as an action so that other repos can reference it
-- [ ] Add system prompt for directing behavior of the agent
+- [x] Deploy to github as an action so that other repos can reference it
+- [x] Add system prompt for directing behavior of the agent
 
 ## Backlog
 
