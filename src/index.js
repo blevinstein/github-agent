@@ -31,7 +31,9 @@ async function main() {
     const githubEventPath = process.env.GITHUB_EVENT_PATH;
     let eventContext = {};
     if (githubEventPath && fs.existsSync(githubEventPath)) {
-      eventContext = JSON.parse(fs.readFileSync(githubEventPath, 'utf8'));
+      const rawContext = fs.readFileSync(githubEventPath, 'utf8');
+      core.debug('Got event context: ' + rawContext);
+      eventContext = JSON.parse(rawContext);
     }
     core.debug('Event Context:');
     core.debug(JSON.stringify(eventContext, null, 2));
@@ -98,4 +100,4 @@ async function main() {
 process.on('uncaughtException', (error) => core.error(error.message));
 process.on('unhandledRejection', (error) => core.error(error.message));
 
-main(); 
+main();
