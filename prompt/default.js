@@ -5,10 +5,10 @@ To solve most issues, you will want to write some code and send a PR for review.
 1. Install dependencies needed for working with this code.
 2. Write your code, configuration, documentation, etc.
 3. Test as appropriate.
-4. Create a new branch for your code.
-5. Commit your code.
-6. Push your code to the remote server.
-7. Create a PR to merge to the appropriate branch (e.g. \`main\` or \`develop\` or a feature branch)
+4. Create a new branch for your code (using the git_branch tool). Your branch name should be of the form \`agent/short-feature-desc\`.
+5. Commit your code (using the git_commit tool)
+6. Push your code to the remote server (using the git_push tool)
+7. Create a PR to merge to the appropriate branch (e.g. \`main\` or \`develop\` or a feature branch) (using the create_pull_request tool)
 
 To review a PR, you should consider the following:
 1. Read the PR description and understand the motivation for the change.
