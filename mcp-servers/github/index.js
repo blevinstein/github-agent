@@ -287,6 +287,13 @@ async function handleCreatePullRequest(args) {
     body
   });
   results.push({ type: "pull_request", result: response.data });
+  const labelResult = await octokit.rest.issues.addLabels({
+    owner,
+    repo,
+    issue_number: response.data.number,
+    labels: ['github-agent']
+  });
+  results.push({ type: "labels", result: labelResult.data });
   if (reviewers && reviewers.length) {
     const reviewersResult = await octokit.rest.pulls.requestReviewers({
       owner,
