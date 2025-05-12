@@ -85,7 +85,8 @@ export async function generateChatCompletion({
     const data = await response.json();
     logger?.info(`OpenRouter response: ${JSON.stringify(data, null, 2)}`);
     if (data.error) {
-      throw new Error(`OpenRouter API error: ${JSON.stringify(data.error, null, 2)}\nInput was: ${JSON.stringify(messages, null, 2)}`);
+      logger?.debug(`OpenRouter API error: ${JSON.stringify(data.error, null, 2)}\nInput was: ${JSON.stringify(messages, null, 2)}`);
+      throw new Error(`OpenRouter API error: ${JSON.stringify(data.error, null, 2)}`);
     }
     const newMessage = data.choices[0].message;
     finishReason = data.choices[0].finish_reason || (data.choices[0].finish_details && data.choices[0].finish_details.type);
