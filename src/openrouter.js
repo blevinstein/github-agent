@@ -1,4 +1,5 @@
 import fetch from 'node-fetch';
+import { getGithubToken } from './github.js';
 
 const DEFAULT_MODEL = 'anthropic/claude-3.7-sonnet';
 
@@ -20,7 +21,10 @@ export const DEFAULT_SERVERS = [
     name: 'github',
     type: 'stdio',
     command: 'npx',
-    args: [ '-y', 'blevinstein-github-agent' ]
+    args: [ '-y', 'blevinstein-github-agent' ],
+    env: {
+      'GITHUB_TOKEN': await getGithubToken(),
+    }
   }
 ]
 
