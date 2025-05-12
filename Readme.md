@@ -1,8 +1,24 @@
 # Github Agent
 
-## Goal
+## Setup
 
-Enable LLM workflows that run in response to Github events, such as Issues, or comments on a PR.
+To use the Github Agent in your repository:
+
+1. **Copy the sample workflow:**
+   - Copy `.github/workflows/agent.yaml` from this repository into your own repo.
+   - Customize the workflow as needed (e.g., labels, instructions, model).
+
+2. **Set up OpenRouter API Key:**
+   - Go to your repository's **Settings > Secrets and variables > Actions**.
+   - Add a new secret named `OPENROUTER_API_KEY` with your OpenRouter API key as the value.
+
+3. **(Optional) Configure additional secrets or environment variables** as needed for your use case.
+
+4. **Customize agent behavior:**
+   - Edit the workflow YAML to change triggers, instructions, or models.
+   - You can use mustache-style templating in the `instructions` field to reference GitHub event context.
+
+---
 
 ## Todo List
 
