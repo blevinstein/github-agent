@@ -373,15 +373,31 @@ async function handleUpdatePullRequest(args) {
     });
     results.push({ type: "issue", result: issueResult.data });
   }
-  // Reviewers
-  if (reviewers && reviewers.length) {
-    const reviewersResult = await octokit.rest.pulls.requestReviewers({
-      owner,
-      repo,
-      pull_number,
-      reviewers
-    });
-    results.push({ type: "reviewers", result: reviewersResult.data });
+  // Reviewers: synchronize to match the input list
+  if (Array.isArray(reviewers)) {
+    // Get current reviewers
+    const pr = await octokit.rest.pulls.get({ owner, repo, pull_number });
+    const currentReviewers = (pr.data.requested_reviewers || []).map(r => r.login);
+    const reviewersToAdd = reviewers.filter(r => !currentReviewers.includes(r));
+    const reviewersToRemove = currentReviewers.filter(r => !reviewers.includes(r));
+    if (reviewersToAdd.length > 0) {
+      const addResult = await octokit.rest.pulls.requestReviewers({
+        owner,
+        repo,
+        pull_number,
+        reviewers: reviewersToAdd
+      });
+      results.push({ type: "add_reviewers", result: addResult.data });
+    }
+    if (reviewersToRemove.length > 0) {
+      const removeResult = await octokit.rest.pulls.removeRequestedReviewers({
+        owner,
+        repo,
+        pull_number,
+        reviewers: reviewersToRemove
+      });
+      results.push({ type: "remove_reviewers", result: removeResult.data });
+    }
   }
   return {
     content: [{ type: "text", text: JSON.stringify(results, null, 2) }]
