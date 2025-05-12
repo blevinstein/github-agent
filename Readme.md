@@ -34,37 +34,34 @@ To use the Github Agent in your repository:
 
 ---
 
-## Todo List
+## Project Status
 
-- [x] Write a simple script for running the agent with specified instructions/tools
-- [x] Integrate openrouter for generating LLM completions
-- [x] Connect openrouter to mcp-client, fetch list of tools and facilitate tool calls
-- [x] Define and document agentRules.json format
-  - [x] Trigger definition
-  - [x] Action definition (specify instructions, model, tools, etc)
-  - [x] Integrate mustache.js for instruction template rendering
-  - [x] Allow file:// syntax for instructions field in agentsRule.json
-- [x] Create a sample workflow for triggering the agent (pass along github.event, github.ref_name, github.ref_type to the agent code)
-- [x] Write code for evaluating github events against agentRules and executing the agent with the right instructions/tools
-- [x] Integrate git & filesystem to allow the agent to write code and commit (https://github.com/modelcontextprotocol/servers/tree/main/src/filesystem, https://github.com/modelcontextprotocol/servers/tree/main/src/git)
-- [x] Implement a custom MCP using octokit to allow the agent to update issues and send PRs
-  - [x] get_issue
-  - [x] get_pull_request
-  - [x] get_pull_request_reviews
-  - [x] make sure the agent can get information about an issue
-  - [x] make sure the agent can get information about a PR
-  - [x] add_issue_comment
-  - [x] create_pull_request_review
-  - [x] create_pull_request
-  - [x] make sure the agent can push code to a new branch and create a PR
-  - [x] update_issue
-  - [x] make sure the agent can close a fixed issue
-  - [x] make sure the agent can close a PR
-  - [x] make sure the agent can merge an approved PR
-  - [x] make sure the agent can review a PR
-  - [x] make sure the agent can update a PR in response to comments (both new commits, and changing title/description/assignee/etc)
-- [x] Deploy to github as an action so that other repos can reference it
-- [x] Add system prompt for directing behavior of the agent
+### Completed Features
+
+- [x] Core Agent Functionality
+  - [x] Write a simple script for running the agent with specified instructions/tools
+  - [x] Integrate openrouter for generating LLM completions
+  - [x] Connect openrouter to mcp-client, fetch list of tools and facilitate tool calls
+  - [x] Add system prompt for directing behavior of the agent
+
+- [x] GitHub Integration
+  - [x] Integrate git & filesystem to allow the agent to write code and commit
+  - [x] Implement a custom MCP using octokit to allow the agent to update issues and send PRs
+  - [x] Create a sample workflow for triggering the agent
+  - [x] Write code for evaluating github events against agentRules and executing the agent
+  - [x] Deploy to github as an action so that other repos can reference it ✓
+
+- [x] Configuration System
+  - [x] Define and document agentRules.json format
+    - [x] Trigger definition
+    - [x] Action definition (specify instructions, model, tools, etc)
+    - [x] Integrate mustache.js for instruction template rendering
+    - [x] Allow file:// syntax for instructions field in agentsRule.json
+
+- [x] GitHub API Capabilities
+  - [x] Issue management (get issues, add comments, update/close issues)
+  - [x] Pull request operations (create, review, update, merge PRs)
+  - [x] Code management (push code to branches, create PRs)
 
 ## Backlog
 
