@@ -101,6 +101,7 @@ export async function generateChatCompletion({
             content: typeof result === 'string' ? result : (JSON.stringify(result) || 'OK'),
           });
         } catch (e) {
+          logger?.error(`Error calling tool ${toolCall.function.name}: ${e.message}`);
           responseMessages.push({
             role: 'tool',
             tool_call_id: toolCall.id,
