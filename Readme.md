@@ -63,8 +63,8 @@ To use the Github Agent in your repository:
   - [x] make sure the agent can merge an approved PR
   - [x] make sure the agent can review a PR
   - [x] make sure the agent can update a PR in response to comments (both new commits, and changing title/description/assignee/etc)
-- [x] Deploy to github as an action so that other repos can reference it
 - [x] Add system prompt for directing behavior of the agent
+- [x] Deploy to github as an action so that other repos can reference it
 
 ## Backlog
 
