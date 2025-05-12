@@ -43630,8 +43630,8 @@ async function generateChatCompletion({
       const errorText = await response.text();
       throw new Error(`OpenRouter API error: ${response.status} ${errorText}`);
     }
-    logger?.info(`OpenRouter response: ${JSON.stringify(response, null, 2)}`);
     const data = await response.json();
+    logger?.info(`OpenRouter response: ${JSON.stringify(data, null, 2)}`);
     const newMessage = data.choices[0].message;
     finishReason = data.choices[0].finish_reason || (data.choices[0].finish_details && data.choices[0].finish_details.type);
     responseMessages.push(newMessage);
