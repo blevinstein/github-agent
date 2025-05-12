@@ -43563,6 +43563,12 @@ const DEFAULT_SERVERS = [
     type: 'stdio',
     command: 'npx',
     args: [ '-y', '@cyanheads/git-mcp-server' ],
+  },
+  {
+    name: 'github',
+    type: 'stdio',
+    command: 'npx',
+    args: [ '-y', 'blevinstein-github-agent' ]
   }
 ]
 

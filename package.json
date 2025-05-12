@@ -1,6 +1,6 @@
 {
-  "name": "github-agent",
-  "version": "1.0.0",
+  "name": "blevinstein-github-agent",
+  "version": "1.0.1",
   "main": "index.js",
   "type": "module",
   "license": "MIT",
@@ -28,7 +28,7 @@
   },
   "devDependencies": {
     "@vercel/ncc": "^0.38.3",
-    "vitest": "^1.0.0",
-    "husky": "^9.0.11"
+    "husky": "^9.0.11",
+    "vitest": "^1.0.0"
   }
 }
