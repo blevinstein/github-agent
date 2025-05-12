@@ -7,10 +7,10 @@ import {
   ListToolsRequestSchema,
 } from "@modelcontextprotocol/sdk/types.js";
 import { Octokit } from "octokit";
+import { getGithubToken } from "../../src/github.js";
 
-// Initialize Octokit
 const octokit = new Octokit({
-  auth: process.env.GITHUB_TOKEN
+  auth: await getGithubToken()
 });
 
 process.on('uncaughtException', (err) => {
@@ -83,6 +83,21 @@ const GITHUB_TOOLS = [
       },
       required: ["owner", "repo", "issue_number", "body"]
     }
+  },
+  {
+    name: "create_pull_request_review",
+    description: "Create a review on a GitHub pull request",
+    inputSchema: {
+      type: "object",
+      properties: {
+        owner: { type: "string", description: "Repository owner" },
+        repo: { type: "string", description: "Repository name" },
+        pull_number: { type: "number", description: "Pull request number" },
+        body: { type: "string", description: "Review body" },
+        event: { type: "string", description: "Review event (APPROVE, REQUEST_CHANGES, or COMMENT)" }
+      },
+      required: ["owner", "repo", "pull_number", "body", "event"]
+    }
   }
 ];
 
@@ -143,6 +158,23 @@ async function handleAddIssueComment(args) {
   };
 }
 
+async function handleCreatePullRequestReview(args) {
+  const { owner, repo, pull_number, body, event } = args;
+  const response = await octokit.rest.pulls.createReview({
+    owner,
+    repo,
+    pull_number,
+    body,
+    event
+  });
+  return {
+    content: [{
+      type: "text",
+      text: JSON.stringify(response.data, null, 2)
+    }]
+  };
+}
+
 const server = new Server(
   {
     name: "github-mcp",
@@ -174,6 +206,8 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
         return await handleGetPullRequest(args);
       case "add_issue_comment":
         return await handleAddIssueComment(args);
+      case "create_pull_request_review":
+        return await handleCreatePullRequestReview(args);
       default:
         return {
           content: [{ type: "text", text: `Unknown tool: ${toolName}` }],

@@ -15,6 +15,7 @@
   "dependencies": {
     "@actions/core": "^1.11.1",
     "@modelcontextprotocol/sdk": "^1.0.0",
+    "@octokit/auth-app": "^7.2.1",
     "async": "^3.2.6",
     "dotenv": "^16.5.0",
     "mcp-client": "^1.12.3",
