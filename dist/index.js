@@ -60682,8 +60682,10 @@ async function main() {
         core.info('No text response to post as comment.');
       }
     }
+    process.exit(0);
   } catch (error) {
     core.setFailed(error.message);
+    process.exit(1);
   }
 }
 
