@@ -11,8 +11,13 @@ on:
 jobs:
   agent:
     runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      issues: write
+      pull-requests: write
     env:
       OPENROUTER_API_KEY: ${{ secrets.OPENROUTER_API_KEY }}
+      GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
     if: |
       github.event.label.name == 'fixme' ||
       github.event.label.name == 'reviewme' ||
