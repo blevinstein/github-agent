@@ -92,13 +92,21 @@ export async function generateChatCompletion({
         if (!(toolCall.function.name in toolCallbacks)) {
           continue;
         }
-        const args = JSON.parse(toolCall.function.arguments);
-        const result = await toolCallbacks[toolCall.function.name](args);
-        responseMessages.push({
-          role: 'tool',
-          tool_call_id: toolCall.id,
-          content: typeof result === 'string' ? result : (JSON.stringify(result) || 'OK'),
-        });
+        try {
+          const args = JSON.parse(toolCall.function.arguments || '{}');
+          const result = await toolCallbacks[toolCall.function.name](args);
+          responseMessages.push({
+            role: 'tool',
+            tool_call_id: toolCall.id,
+            content: typeof result === 'string' ? result : (JSON.stringify(result) || 'OK'),
+          });
+        } catch (e) {
+          responseMessages.push({
+            role: 'tool',
+            tool_call_id: toolCall.id,
+            content: `Error: ${e.message}`,
+          });
+        }
       }
     }
   } while (finishReason === 'length' || finishReason === 'tool_calls');
