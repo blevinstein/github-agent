@@ -35,7 +35,7 @@ jobs:
             Title: {{issue.title}}
             Number: {{issue.number}}
             Body: {{issue.body}}
-            More details are available using the get_issue tool.
+            Comments: {{issue.comments}} (use the get_issue tool to get more details)
             Please propose a fix for this issue. If possible, create a pull request that resolves it and reference the issue number in the PR description.
           model: anthropic/claude-3.7-sonnet
 
@@ -65,7 +65,6 @@ jobs:
             Title: {{pull_request.title}}
             Number: {{pull_request.number}}
             Body: {{pull_request.body}}
-            More details are available using the get_pull_request tool.
             Please review the code changes in this PR. If appropriate, run tests, and leave a review or comments with your feedback and suggestions.
           model: anthropic/claude-3.7-sonnet
 
@@ -96,7 +95,6 @@ jobs:
             PR Number: {{issue.number}}
             Comment Author: {{comment.user.login}}
             Comment Body: {{comment.body}}
-            More details are available using the get_pull_request tool.
             Please update the PR or respond to the comment as appropriate, referencing the PR number in your response.
           model: anthropic/claude-3.7-sonnet
 
@@ -126,7 +124,7 @@ jobs:
             Title: {{issue.title}}
             Number: {{issue.number}}
             Body: {{issue.body}}
-            More details are available using the get_issue tool.
+            Comments: {{issue.comments}} (use the get_issue tool to get more details)
             Please post a comment on this issue with the answer to any knowledge questions in the issue.
           model: anthropic/claude-3.7-sonnet
           mcp_servers: |
