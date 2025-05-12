@@ -1,0 +1,1 @@
+This is a test file to verify that PRs created by the agent are labeled with 'github-agent'. 
