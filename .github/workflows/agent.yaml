@@ -32,6 +32,7 @@ jobs:
           treat_reply_as_comment: true
           instructions: |
             The following issue has been labeled 'fixme':
+            Repository: {{repository.full_name}}
             Title: {{issue.title}}
             Number: {{issue.number}}
             Body: {{issue.body}}
@@ -62,6 +63,7 @@ jobs:
           treat_reply_as_comment: true
           instructions: |
             The following pull request has been labeled 'reviewme':
+            Repository: {{repository.full_name}}
             Title: {{pull_request.title}}
             Number: {{pull_request.number}}
             Body: {{pull_request.body}}
@@ -91,6 +93,7 @@ jobs:
           treat_reply_as_comment: true
           instructions: |
             A new comment was posted on a pull request created by the agent:
+            Repository: {{repository.full_name}}
             PR Title: {{issue.title}}
             PR Number: {{issue.number}}
             Comment Author: {{comment.user.login}}
@@ -121,6 +124,7 @@ jobs:
           treat_reply_as_comment: true
           instructions: |
             The following issue has been labeled 'lookup':
+            Repository: {{repository.full_name}}
             Title: {{issue.title}}
             Number: {{issue.number}}
             Body: {{issue.body}}
