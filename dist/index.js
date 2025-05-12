@@ -43606,7 +43606,7 @@ async function generateChatCompletion({
         return acc;
       }, {}),
     }
-    logger?.info(`Loaded ${mcpTools.length} MCP tools`);
+    logger?.info(`Loaded ${mcpTools.length} MCP tools: ${mcpTools.map(t => t.name).join(', ')}`);
   }
 
   let responseMessages = [];
