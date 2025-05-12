@@ -33,8 +33,35 @@ Enable LLM workflows that run in response to Github events, such as Issues, or c
   - [x] make sure the agent can merge an approved PR
   - [x] make sure the agent can review a PR
   - [x] make sure the agent can update a PR in response to comments (both new commits, and changing title/description/assignee/etc)
-- [ ] Deploy to github as an action so that other repos can reference it
+- [x] Deploy to github as an action so that other repos can reference it
 - [ ] Add system prompt for directing behavior of the agent
+
+## How to Use as a GitHub Action
+
+This repository has been deployed as a GitHub Action, allowing you to reference it directly in your workflows. To use it in your repository:
+
+1. Create a workflow file in your repository (e.g., `.github/workflows/agent.yaml`)
+2. Configure the workflow to trigger on appropriate GitHub events (issues, pull requests, comments, etc.)
+3. Add your OpenRouter API key as a secret in your repository
+4. Reference this action in your workflow steps
+
+Example workflow configuration:
+
+```yaml
+steps:
+  - name: Run Github Agent
+    uses: blevinstein/github-agent@main
+    with:
+      instructions: |
+        # Your instructions here with mustache templates
+        Title: {{issue.title}}
+        Number: {{issue.number}}
+        Body: {{issue.body}}
+      model: anthropic/claude-3.7-sonnet
+      treat_reply_as_comment: true
+```
+
+See the `.github/workflows/agent.yaml` file in this repository for a complete example implementation.
 
 ## Backlog
 
