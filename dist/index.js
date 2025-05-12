@@ -60594,7 +60594,10 @@ async function main() {
       { role: 'user', content: renderedInstructions },
     ];
 
+    core.debug('Creating MCP client');
     const mcpClient = await MultiClient.create(DEFAULT_SERVERS);
+
+    core.debug('Generating chat completion');
     const result = await generateChatCompletion({
       messages,
       model,
