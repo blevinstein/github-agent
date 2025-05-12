@@ -1,0 +1,30 @@
+{
+  "mcpServers": {
+    "github-local": {
+      "command": "node",
+      "args": ["./mcp-servers/github/index.js"],
+      "env": {
+        "GITHUB_APP_ID": "123456",
+        "GITHUB_APP_INSTALLATION_ID": "78901234",
+        "GITHUB_APP_PRIVATE_KEY": "/absolute/path/to/private-key.pem"
+      }
+    },
+    "filesystem": {
+      "type": "stdio",
+      "command": "npx",
+      "args": [ "-y", "@modelcontextprotocol/server-filesystem", "/absolute/path/to/repo" ]
+    },
+    "git": {
+      "type": "stdio",
+      "command": "docker",
+      "args": [
+        "run",
+        "--rm",
+        "-i",
+        "--mount",
+        "type=bind,src=/absolute/path/to/repo,dst=/workspace",
+        "mcp/git"
+      ]
+    }
+  }
+}
