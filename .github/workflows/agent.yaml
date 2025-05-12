@@ -9,8 +9,10 @@ on:
     types: [created]
 
 jobs:
-  agent:
+  fixme:
+    name: Fixme Issue Handler
     runs-on: ubuntu-latest
+    if: github.event_name == 'issues' && github.event.label.name == 'fixme'
     permissions:
       contents: write
       issues: write
@@ -18,20 +20,13 @@ jobs:
     env:
       OPENROUTER_API_KEY: ${{ secrets.OPENROUTER_API_KEY }}
       GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-    if: |
-      github.event.label.name == 'fixme' ||
-      github.event.label.name == 'reviewme' ||
-      github.event.label.name == 'time_check' ||
-      (github.event.issue.pull_request && github.event.comment && contains(github.event.issue.labels.*.name, 'github-agent'))
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
+      - uses: actions/checkout@v4
       - name: Set up Git user for commits
         run: |
           git config --global user.name "github-actions[bot]"
           git config --global user.email "github-actions[bot]@users.noreply.github.com"
       - name: Run Github Agent for fixme issues
-        if: github.event_name == 'issues' && github.event.label.name == 'fixme'
         uses: blevinstein/github-agent@main
         with:
           treat_reply_as_comment: true
@@ -42,8 +37,25 @@ jobs:
             Body: {{issue.body}}
             Please propose a fix for this issue. If possible, create a pull request that resolves it and reference the issue number in the PR description.
           model: anthropic/claude-3.7-sonnet
+
+  reviewme:
+    name: Reviewme PR Handler
+    runs-on: ubuntu-latest
+    if: github.event_name == 'pull_request' && github.event.label.name == 'reviewme'
+    permissions:
+      contents: write
+      issues: write
+      pull-requests: write
+    env:
+      OPENROUTER_API_KEY: ${{ secrets.OPENROUTER_API_KEY }}
+      GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+    steps:
+      - uses: actions/checkout@v4
+      - name: Set up Git user for commits
+        run: |
+          git config --global user.name "github-actions[bot]"
+          git config --global user.email "github-actions[bot]@users.noreply.github.com"
       - name: Run Github Agent for reviewme PRs
-        if: github.event_name == 'pull_request' && github.event.label.name == 'reviewme'
         uses: blevinstein/github-agent@main
         with:
           treat_reply_as_comment: true
@@ -54,8 +66,25 @@ jobs:
             Body: {{pull_request.body}}
             Please review the code changes in this PR. If appropriate, run tests, and leave a review or comments with your feedback and suggestions.
           model: anthropic/claude-3.7-sonnet
+
+  pr_comment:
+    name: PR Comment Handler
+    runs-on: ubuntu-latest
+    if: github.event_name == 'issue_comment' && github.event.issue.pull_request && contains(github.event.issue.labels.*.name, 'github-agent')
+    permissions:
+      contents: write
+      issues: write
+      pull-requests: write
+    env:
+      OPENROUTER_API_KEY: ${{ secrets.OPENROUTER_API_KEY }}
+      GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+    steps:
+      - uses: actions/checkout@v4
+      - name: Set up Git user for commits
+        run: |
+          git config --global user.name "github-actions[bot]"
+          git config --global user.email "github-actions[bot]@users.noreply.github.com"
       - name: Run Github Agent for comments on LLM-created PRs
-        if: github.event_name == 'issue_comment' && github.event.issue.pull_request && contains(github.event.issue.labels.*.name, 'github-agent')
         uses: blevinstein/github-agent@main
         with:
           treat_reply_as_comment: true
@@ -67,23 +96,44 @@ jobs:
             Comment Body: {{comment.body}}
             Please update the PR or respond to the comment as appropriate, referencing the PR number in your response.
           model: anthropic/claude-3.7-sonnet
-      - name: Run Github Agent with time server MCP
-        if: github.event_name == 'issues' && github.event.label.name == 'time_check'
+
+  lookup:
+    name: Wikipedia Lookup Handler
+    runs-on: ubuntu-latest
+    if: github.event_name == 'issues' && github.event.label.name == 'lookup'
+    permissions:
+      contents: write
+      issues: write
+      pull-requests: write
+    env:
+      OPENROUTER_API_KEY: ${{ secrets.OPENROUTER_API_KEY }}
+      GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+    steps:
+      - uses: actions/checkout@v4
+      - name: Set up Git user for commits
+        run: |
+          git config --global user.name "github-actions[bot]"
+          git config --global user.email "github-actions[bot]@users.noreply.github.com"
+      - name: Run Github Agent with Wikipedia MCP
         uses: blevinstein/github-agent@main
         with:
           treat_reply_as_comment: true
           instructions: |
-            The following issue has been labeled 'time_check':
+            The following issue has been labeled 'lookup':
             Title: {{issue.title}}
             Number: {{issue.number}}
             Body: {{issue.body}}
-            Please post a comment on this issue with the current time.
+            Please post a comment on this issue with the answer to any knowledge questions in the issue.
           model: anthropic/claude-3.7-sonnet
           mcp_servers: |
             {
-              "time": {
-                "type": "stdio",
+              "wikipedia-mcp": {
                 "command": "docker",
-                "args": ["run", "-i", "--rm", "mcp/time"]
+                "args": [
+                  "run",
+                  "-i",
+                  "--rm",
+                  "mcp/wikipedia-mcp"
+                ]
               }
             }
