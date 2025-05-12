@@ -33,7 +33,7 @@ Enable LLM workflows that run in response to Github events, such as Issues, or c
   - [x] make sure the agent can merge an approved PR
   - [x] make sure the agent can review a PR
   - [x] make sure the agent can update a PR in response to comments (both new commits, and changing title/description/assignee/etc)
-- [ ] Deploy to github as an action so that other repos can reference it
+- [x] Deploy to github as an action so that other repos can reference it
 - [ ] Add system prompt for directing behavior of the agent
 
 ## Backlog
