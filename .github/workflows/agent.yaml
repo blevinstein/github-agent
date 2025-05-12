@@ -36,7 +36,6 @@ jobs:
             Body: {{issue.body}}
             Please propose a fix for this issue. If possible, create a pull request that resolves it and reference the issue number in the PR description.
           model: anthropic/claude-3.7-sonnet
-          treat_reply_as_comment: true
       - name: Run Github Agent for reviewme PRs
         if: github.event_name == 'pull_request' && github.event.label.name == 'reviewme'
         uses: blevinstein/github-agent@main
@@ -48,7 +47,6 @@ jobs:
             Body: {{pull_request.body}}
             Please review the code changes in this PR. If appropriate, run tests, and leave a review or comments with your feedback and suggestions.
           model: anthropic/claude-3.7-sonnet
-          treat_reply_as_comment: true
       - name: Run Github Agent for comments on LLM-created PRs
         if: github.event_name == 'issue_comment' && github.event.issue.pull_request && contains(github.event.issue.labels.*.name, 'github-agent')
         uses: blevinstein/github-agent@main
@@ -61,4 +59,3 @@ jobs:
             Comment Body: {{comment.body}}
             Please update the PR or respond to the comment as appropriate, referencing the PR number in your response.
           model: anthropic/claude-3.7-sonnet
-          treat_reply_as_comment: true 

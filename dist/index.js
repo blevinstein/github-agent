@@ -60571,6 +60571,9 @@ To solve most issues, you will want to write some code and send a PR for review.
 6. Push your code to the remote server (using the git_push tool)
 7. Create a PR to merge to the appropriate branch (e.g. \`main\` or \`develop\` or a feature branch) (using the create_pull_request tool)
 
+If you are unable to solve an issue, upload any work-in-progress code to the repository,
+and post a short summary of the issues you encountered along with a link to your branch (using the add_issue_comment tool).
+
 To review a PR, you should consider the following:
 1. Read the PR description and understand the motivation for the change.
 2. Review the code for correctness, clarity, and maintainability.
