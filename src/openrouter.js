@@ -12,15 +12,8 @@ export const DEFAULT_SERVERS = [
   {
     name: 'git',
     type: 'stdio',
-    command: 'docker',
-    args: [
-      'run',
-      '--rm',
-      '-i',
-      '--mount',
-      `type=bind,src=${process.cwd()},dst=/workspace`,
-      'mcp/git'
-    ]
+    command: 'npx',
+    args: [ '-y', '@cyanheads/git-mcp-server' ],
   }
 ]
 
