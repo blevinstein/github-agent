@@ -98,6 +98,85 @@ const GITHUB_TOOLS = [
       },
       required: ["owner", "repo", "pull_number", "body", "event"]
     }
+  },
+  {
+    name: "create_pull_request",
+    description: "Create a pull request from a branch (head) to a base branch.",
+    inputSchema: {
+      type: "object",
+      properties: {
+        owner: { type: "string", description: "Repository owner" },
+        repo: { type: "string", description: "Repository name" },
+        title: { type: "string", description: "Title of the pull request" },
+        head: { type: "string", description: "The name of the branch where your changes are implemented (compare)" },
+        base: { type: "string", description: "The name of the branch you want the changes pulled into (e.g., main)" },
+        body: { type: "string", description: "Body of the pull request" }
+      },
+      required: ["owner", "repo", "title", "head", "base"]
+    }
+  },
+  {
+    name: "update_issue",
+    description: "Update a GitHub issue (labels, title, body, state)",
+    inputSchema: {
+      type: "object",
+      properties: {
+        owner: { type: "string", description: "Repository owner" },
+        repo: { type: "string", description: "Repository name" },
+        issue_number: { type: "number", description: "Issue number" },
+        labels: { type: "array", items: { type: "string" }, description: "Labels to set on the issue" },
+        title: { type: "string", description: "New title for the issue" },
+        body: { type: "string", description: "New body for the issue" },
+        state: { type: "string", description: "State (open or closed)" }
+      },
+      required: ["owner", "repo", "issue_number"]
+    }
+  },
+  {
+    name: "close_pull_request",
+    description: "Close a pull request by number.",
+    inputSchema: {
+      type: "object",
+      properties: {
+        owner: { type: "string", description: "Repository owner" },
+        repo: { type: "string", description: "Repository name" },
+        pull_number: { type: "number", description: "Pull request number" }
+      },
+      required: ["owner", "repo", "pull_number"]
+    }
+  },
+  {
+    name: "merge_pull_request",
+    description: "Merge a pull request by number.",
+    inputSchema: {
+      type: "object",
+      properties: {
+        owner: { type: "string", description: "Repository owner" },
+        repo: { type: "string", description: "Repository name" },
+        pull_number: { type: "number", description: "Pull request number" },
+        commit_title: { type: "string", description: "Title for the merge commit" },
+        commit_message: { type: "string", description: "Message for the merge commit" },
+        merge_method: { type: "string", description: "Merge method (merge, squash, rebase)" }
+      },
+      required: ["owner", "repo", "pull_number"]
+    }
+  },
+  {
+    name: "update_pull_request",
+    description: "Update a pull request (title, body, assignees, etc)",
+    inputSchema: {
+      type: "object",
+      properties: {
+        owner: { type: "string", description: "Repository owner" },
+        repo: { type: "string", description: "Repository name" },
+        pull_number: { type: "number", description: "Pull request number" },
+        title: { type: "string", description: "New title for the PR" },
+        body: { type: "string", description: "New body for the PR" },
+        assignees: { type: "array", items: { type: "string" }, description: "Assignees for the PR" },
+        state: { type: "string", description: "State (open or closed)" }
+      },
+      required: ["owner", "repo", "pull_number"]
+    }
   }
 ];
 
@@ -175,6 +254,81 @@ async function handleCreatePullRequestReview(args) {
   };
 }
 
+async function handleCreatePullRequest(args) {
+  const { owner, repo, title, head, base, body } = args;
+  const response = await octokit.rest.pulls.create({
+    owner,
+    repo,
+    title,
+    head,
+    base,
+    body
+  });
+  return {
+    content: [{ type: "text", text: JSON.stringify(response.data, null, 2) }]
+  };
+}
+
+async function handleUpdateIssue(args) {
+  const { owner, repo, issue_number, labels, title, body, state } = args;
+  const response = await octokit.rest.issues.update({
+    owner,
+    repo,
+    issue_number,
+    ...(labels ? { labels } : {}),
+    ...(title ? { title } : {}),
+    ...(body ? { body } : {}),
+    ...(state ? { state } : {})
+  });
+  return {
+    content: [{ type: "text", text: JSON.stringify(response.data, null, 2) }]
+  };
+}
+
+async function handleClosePullRequest(args) {
+  const { owner, repo, pull_number } = args;
+  const response = await octokit.rest.pulls.update({
+    owner,
+    repo,
+    pull_number,
+    state: "closed"
+  });
+  return {
+    content: [{ type: "text", text: JSON.stringify(response.data, null, 2) }]
+  };
+}
+
+async function handleMergePullRequest(args) {
+  const { owner, repo, pull_number, commit_title, commit_message, merge_method } = args;
+  const response = await octokit.rest.pulls.merge({
+    owner,
+    repo,
+    pull_number,
+    ...(commit_title ? { commit_title } : {}),
+    ...(commit_message ? { commit_message } : {}),
+    ...(merge_method ? { merge_method } : {})
+  });
+  return {
+    content: [{ type: "text", text: JSON.stringify(response.data, null, 2) }]
+  };
+}
+
+async function handleUpdatePullRequest(args) {
+  const { owner, repo, pull_number, title, body, assignees, state } = args;
+  const response = await octokit.rest.pulls.update({
+    owner,
+    repo,
+    pull_number,
+    ...(title ? { title } : {}),
+    ...(body ? { body } : {}),
+    ...(assignees ? { assignees } : {}),
+    ...(state ? { state } : {})
+  });
+  return {
+    content: [{ type: "text", text: JSON.stringify(response.data, null, 2) }]
+  };
+}
+
 const server = new Server(
   {
     name: "github-mcp",
@@ -208,6 +362,16 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
         return await handleAddIssueComment(args);
       case "create_pull_request_review":
         return await handleCreatePullRequestReview(args);
+      case "create_pull_request":
+        return await handleCreatePullRequest(args);
+      case "update_issue":
+        return await handleUpdateIssue(args);
+      case "close_pull_request":
+        return await handleClosePullRequest(args);
+      case "merge_pull_request":
+        return await handleMergePullRequest(args);
+      case "update_pull_request":
+        return await handleUpdatePullRequest(args);
       default:
         return {
           content: [{ type: "text", text: `Unknown tool: ${toolName}` }],
