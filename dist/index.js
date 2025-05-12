@@ -60625,7 +60625,12 @@ async function main() {
     const mcpServersInput = core.getInput('mcp_servers');
     if (mcpServersInput) {
       const userServers = Object.entries(JSON.parse(mcpServersInput))
-          .map(([name, config]) => ({ name, ...config }));
+          .map(([name, config]) => ({
+            name,
+            // TODO: Add support for sse type MCP servers
+            type: config.url ? 'http' : 'stdio',
+            ...config
+          }));
       mcpServers = [ ...DEFAULT_SERVERS, ...userServers ];
     }
 
