@@ -11,6 +11,8 @@ on:
 jobs:
   agent:
     runs-on: ubuntu-latest
+    env:
+      OPENROUTER_API_KEY: ${{ secrets.OPENROUTER_API_KEY }}
     if: |
       github.event.label.name == 'fixme' ||
       github.event.label.name == 'reviewme' ||
