@@ -62,7 +62,7 @@ async function main() {
     ];
 
     core.debug('Creating MCP client');
-    const mcpClient = await MultiClient.create(mcpServers);
+    const mcpClient = await MultiClient.create(mcpServers, 15_000);
 
     core.debug('Generating chat completion:');
     core.debug(JSON.stringify(messages, null, 2));
