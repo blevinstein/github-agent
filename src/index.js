@@ -6,10 +6,9 @@ import Mustache from 'mustache';
 import { Octokit } from 'octokit';
 import { getGithubToken } from './github.js';
 
+import DEFAULT_SYSTEM_PROMPT from '../prompt/default.js';
+
 const FILE_PREFIX = 'file://';
-const DEFAULT_SYSTEM_PROMPT =
-    'You are a helpful coding assistant. Use the tools provided to you to complete the task given. '
-    + 'Most tasks will involve updating a pull request or an issue in github.';
 
 export function getInstructions(instructionsInput) {
   if (instructionsInput.startsWith(FILE_PREFIX)) {
