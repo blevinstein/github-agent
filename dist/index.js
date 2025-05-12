@@ -41397,6 +41397,7 @@ __nccwpck_require__.d(__webpack_exports__, {
 
 // EXTERNAL MODULE: ./node_modules/@actions/core/lib/core.js
 var core = __nccwpck_require__(7484);
+var core_namespaceObject = /*#__PURE__*/__nccwpck_require__.t(core, 2);
 // EXTERNAL MODULE: external "fs"
 var external_fs_ = __nccwpck_require__(9896);
 ;// CONCATENATED MODULE: external "node:http"
@@ -43575,6 +43576,7 @@ async function generateChatCompletion({
   temperature,
   toolChoice,
   mcpClient,
+  logger,
 }) {
   const { OPENROUTER_API_KEY } = process.env;
   if (!OPENROUTER_API_KEY) throw new Error('Missing OPENROUTER_API_KEY in environment');
@@ -43604,6 +43606,7 @@ async function generateChatCompletion({
         return acc;
       }, {}),
     }
+    logger?.info(`Loaded ${mcpTools.length} MCP tools`);
   }
 
   let responseMessages = [];
@@ -43627,6 +43630,7 @@ async function generateChatCompletion({
       const errorText = await response.text();
       throw new Error(`OpenRouter API error: ${response.status} ${errorText}`);
     }
+    logger?.info(`OpenRouter response: ${JSON.stringify(response, null, 2)}`);
     const data = await response.json();
     const newMessage = data.choices[0].message;
     finishReason = data.choices[0].finish_reason || (data.choices[0].finish_details && data.choices[0].finish_details.type);
@@ -60597,11 +60601,13 @@ async function main() {
     core.debug('Creating MCP client');
     const mcpClient = await MultiClient.create(DEFAULT_SERVERS);
 
-    core.debug('Generating chat completion');
+    core.debug('Generating chat completion:');
+    core.debug(JSON.stringify(messages, null, 2));
     const result = await generateChatCompletion({
       messages,
       model,
       mcpClient,
+      logger: core_namespaceObject,
     });
     core.debug('LLM Result:');
     core.debug(JSON.stringify(result, null, 2));

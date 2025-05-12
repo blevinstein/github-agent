@@ -28,6 +28,7 @@ export async function generateChatCompletion({
   temperature,
   toolChoice,
   mcpClient,
+  logger,
 }) {
   const { OPENROUTER_API_KEY } = process.env;
   if (!OPENROUTER_API_KEY) throw new Error('Missing OPENROUTER_API_KEY in environment');
@@ -57,6 +58,7 @@ export async function generateChatCompletion({
         return acc;
       }, {}),
     }
+    logger?.info(`Loaded ${mcpTools.length} MCP tools`);
   }
 
   let responseMessages = [];
@@ -80,6 +82,7 @@ export async function generateChatCompletion({
       const errorText = await response.text();
       throw new Error(`OpenRouter API error: ${response.status} ${errorText}`);
     }
+    logger?.info(`OpenRouter response: ${JSON.stringify(response, null, 2)}`);
     const data = await response.json();
     const newMessage = data.choices[0].message;
     finishReason = data.choices[0].finish_reason || (data.choices[0].finish_details && data.choices[0].finish_details.type);

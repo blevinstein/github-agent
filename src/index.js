@@ -51,11 +51,13 @@ async function main() {
     core.debug('Creating MCP client');
     const mcpClient = await MultiClient.create(DEFAULT_SERVERS);
 
-    core.debug('Generating chat completion');
+    core.debug('Generating chat completion:');
+    core.debug(JSON.stringify(messages, null, 2));
     const result = await generateChatCompletion({
       messages,
       model,
       mcpClient,
+      logger: core,
     });
     core.debug('LLM Result:');
     core.debug(JSON.stringify(result, null, 2));

@@ -35,6 +35,7 @@ console.log('Model:', argv.model);
 
 (async () => {
   const messages = [
+    { role: 'system', content: 'You are a helpful assistant.' },
     { role: 'user', content: argv.instructions }
   ];
   const mcpClient = await MultiClient.create([
