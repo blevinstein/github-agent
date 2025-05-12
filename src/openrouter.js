@@ -68,7 +68,7 @@ export async function generateChatCompletion({
         return acc;
       }, {}),
     }
-    logger?.info(`Loaded ${mcpTools.length} MCP tools: ${mcpTools.map(t => t.name).join(', ')}`);
+    logger?.debug(`Loaded ${mcpTools.length} MCP tools: ${mcpTools.map(t => t.name).join(', ')}`);
   }
 
   let responseMessages = [];
@@ -93,7 +93,7 @@ export async function generateChatCompletion({
       throw new Error(`OpenRouter API error: ${response.status} ${errorText}`);
     }
     const data = await response.json();
-    logger?.info(`OpenRouter response: ${JSON.stringify(data, null, 2)}`);
+    logger?.debug(`OpenRouter response: ${JSON.stringify(data, null, 2)}`);
     if (data.error) {
       logger?.debug(`OpenRouter API error: ${JSON.stringify(data.error, null, 2)}\nInput was: ${JSON.stringify([...messages, ...responseMessages], null, 2)}`);
       throw new Error(`OpenRouter API error: ${JSON.stringify(data.error, null, 2)}`);
