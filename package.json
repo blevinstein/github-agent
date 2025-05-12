@@ -5,7 +5,7 @@
   "type": "module",
   "license": "MIT",
   "bin": {
-    "github-mcp-server": "bin/github-mcp-server.js"
+    "blevinstein-github-agent-mcp-server": "bin/blevinstein-github-agent-mcp-server.js"
   },
   "scripts": {
     "agent": "node scripts/run-agent.js",

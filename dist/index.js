@@ -60654,7 +60654,7 @@ const DEFAULT_SERVERS = [
     name: 'github',
     type: 'stdio',
     command: 'npx',
-    args: [ '-y', 'blevinstein-github-agent', 'github-mcp-server' ],
+    args: [ '-y', 'blevinstein-github-agent-mcp-server' ],
     env: {
       'GITHUB_TOKEN': await (0,_github_js__WEBPACK_IMPORTED_MODULE_0__/* .getGithubToken */ .v)(),
     }
@@ -60765,6 +60765,7 @@ async function generateChatCompletion({
 
   return { responseMessages };
 } 
+
 __webpack_async_result__();
 } catch(e) { __webpack_async_result__(e); } }, 1);
 
