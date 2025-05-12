@@ -1,0 +1,57 @@
+name: Github Agent
+
+on:
+  issues:
+    types: [opened, labeled]
+  pull_request:
+    types: [opened, labeled, synchronize]
+  issue_comment:
+    types: [created]
+
+jobs:
+  agent:
+    runs-on: ubuntu-latest
+    if: |
+      github.event.label.name == 'fixme' ||
+      github.event.label.name == 'reviewme' ||
+      (github.event.issue.pull_request && github.event.comment && contains(github.event.issue.labels.*.name, 'github-agent'))
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+      - name: Run Github Agent for fixme issues
+        if: github.event_name == 'issues' && github.event.label.name == 'fixme'
+        uses: blevinstein/github-agent@main
+        with:
+          instructions: |
+            The following issue has been labeled 'fixme':
+            Title: {{issue.title}}
+            Number: {{issue.number}}
+            Body: {{issue.body}}
+            Please propose a fix for this issue. If possible, create a pull request that resolves it and reference the issue number in the PR description.
+          model: anthropic/claude-3.7-sonnet
+          treat_reply_as_comment: true
+      - name: Run Github Agent for reviewme PRs
+        if: github.event_name == 'pull_request' && github.event.label.name == 'reviewme'
+        uses: blevinstein/github-agent@main
+        with:
+          instructions: |
+            The following pull request has been labeled 'reviewme':
+            Title: {{pull_request.title}}
+            Number: {{pull_request.number}}
+            Body: {{pull_request.body}}
+            Please review the code changes in this PR. If appropriate, run tests, and leave a review or comments with your feedback and suggestions.
+          model: anthropic/claude-3.7-sonnet
+          treat_reply_as_comment: true
+      - name: Run Github Agent for comments on LLM-created PRs
+        if: github.event_name == 'issue_comment' && github.event.issue.pull_request && contains(github.event.issue.labels.*.name, 'github-agent')
+        uses: blevinstein/github-agent@main
+        with:
+          instructions: |
+            A new comment was posted on a pull request created by the agent:
+            PR Title: {{issue.title}}
+            PR Number: {{issue.number}}
+            Comment Author: {{comment.user.login}}
+            Comment Body: {{comment.body}}
+            Please update the PR or respond to the comment as appropriate, referencing the PR number in your response.
+          model: anthropic/claude-3.7-sonnet
+          treat_reply_as_comment: true 
