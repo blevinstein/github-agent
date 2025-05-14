@@ -1,4 +1,4 @@
-name: 'Github Agent'
+name: 'blevinstein-github-agent'
 description: 'Run an LLM agent in response to GitHub events, with mustache-templated instructions.'
 author: 'blevinstein'
 inputs:
