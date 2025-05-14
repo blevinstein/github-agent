@@ -1,46 +1,73 @@
 # Github Agent
 
-## Setup
+**Automate your GitHub workflows using natural language.**
 
-To use the Github Agent in your repository:
+Github Agent lets you write *human language instructions*—not shell scripts—to automate your repository. Just add the `blevinstein/github-agent` GitHub Action to your workflow, and the agent will use AI to:
+- Write and edit code
+- Commit changes to git
+- Create or update pull requests and issues
+- Respond to comments
+- Run custom tools (MCP servers)
 
-1. **Copy the sample workflow:**
-   - Copy [agent.yaml](.github/workflows/agent.yaml) into your own repo.
-   - Customize the workflow as needed (e.g., labels, instructions, model).
+By default, the agent can access your repo's filesystem, git, and GitHub API. You can easily extend it with other tools (see below).
 
-2. **Set up OpenRouter API Key:**
+---
+
+## Why use Github Agent?
+
+- **No scripting required:** Describe what you want in plain English. The agent figures out the steps.
+- **Flexible automation:** Automate bug fixes, code reviews, documentation, and more—using natural language.
+- **Context-aware:** Reference GitHub event data (issue/PR details, comments, etc.) in your instructions using mustachejs syntax.
+- **Extensible:** Add custom MCP tools (e.g., Wikipedia lookup, browser automation, Docker) to expand the agent's capabilities.
+
+---
+
+## Quick Start
+
+### 1. Add the Github Agent to your workflow
+
+Create (or edit) a workflow file (see [agent.yaml](.github/workflows/agent.yaml) for some examples)
+
+```yaml
+on:
+  pull_request:
+    types: [opened]
+jobs:
+  my_agent_job:
+    runs-on: ubuntu-latest
+    permissions:
+      pull-requests: write
+    env:
+      OPENROUTER_API_KEY: ${{ secrets.OPENROUTER_API_KEY }}
+      GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+    steps:
+      - uses: actions/checkout@v4
+      - name: Github Agent: Review PR
+        uses: blevinstein/github-agent@v1
+        with:
+          instructions: |
+            Please review the code in pull request {{pull_request.number}} and suggest improvements.
+          model: anthropic/claude-3.7-sonnet
+```
+
+- **Write instructions** inline, or use a file from your repo like so: `instructions: file://path/to/agent-instructions.md`
+- **Reference GitHub context** using mustachejs syntax.
+- **Add Custom MCP tools** as needed for additional capabilities.
+
+### 2. Set up OpenRouter API Key:
    - Go to your repository's **Settings > Secrets and variables > Actions**.
    - Add a new secret named `OPENROUTER_API_KEY` with your OpenRouter API key as the value.
 
-3. **Enable GitHub Actions to create and approve pull requests:**
+### 3. (Optional) Enable GitHub Actions to create and approve pull requests:
+   - This is only needed if you want the agent to create or approve PRs.
    - Go to your repository's **Settings > Actions > General**.
    - Under **Workflow permissions**, enable **Allow GitHub Actions to create and approve pull requests**.
-
-4. **(Optional) Configure additional secrets or environment variables** as needed for your use case.
-
-5. **Customize agent behavior:**
-   - Edit the workflow YAML to change triggers, instructions, or models.
-   - You can use mustache-style templating in the `instructions` field to reference GitHub event context.
-   - **Add MCP servers:** Use the `mcp_servers` input to provide additional MCP tool servers.
-
-   **Example:**
-   ```yaml
-   with:
-     mcp_servers: |
-       {
-         "time": {
-           "type": "stdio",
-           "command": "docker",
-           "args": ["run", "-i", "--rm", "mcp/time"]
-         }
-       }
-   ```
 
 ---
 
 ## Warnings and Best Practices
 
-**Warning:** The Github Agent may try to push to any branch in your repository, merge pull requests, delete issues, etc. If misconfigured or if the agent misbehaves, it could make unwanted changes.
+**Warning:** The Github Agent may try to push to any branch in your repository, merge pull requests, delete issues, etc. If something is misconfigured or if the agent misbehaves, it could make unwanted changes.
 
 **Best Practices:**
 - **Enable branch protection rules** for important branches (e.g., `main`, release branches).
