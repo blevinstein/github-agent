@@ -18,6 +18,21 @@ inputs:
   mcp_servers:
     description: 'JSON string or file:// path specifying additional MCP server configs to use (optional). Example: |\n  {\n    "time": {\n      "type": "stdio",\n      "command": "docker",\n      "args": ["run", "-i", "--rm", "mcp/time"]\n    }\n  }'
     required: false
+  add_label_on_success:
+    description: 'Comma-separated list of labels to add to the issue or PR after a successful run.'
+    required: false
+  remove_label_on_success:
+    description: 'Comma-separated list of labels to remove from the issue or PR after a successful run.'
+    required: false
+  add_label_on_error:
+    description: 'Comma-separated list of labels to add to the issue or PR if an error occurs.'
+    required: false
+  remove_label_on_error:
+    description: 'Comma-separated list of labels to remove from the issue or PR if an error occurs.'
+    required: false
+  mcp_startup_timeout:
+    description: 'Timeout in milliseconds to wait for MCP servers to start (default: 10000).'
+    required: false
 runs:
   using: 'node20'
   main: 'dist/index.js'
