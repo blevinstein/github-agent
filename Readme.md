@@ -85,4 +85,5 @@ jobs:
 - [ ] Integrate puppeteer to allow the agent to use a browser https://github.com/modelcontextprotocol/servers/tree/main/src/puppeteer
 - [ ] Integrate docker to allow the agent to run local development containers https://github.com/ckreiling/mcp-server-docker
 - [ ] Add setting `rules_path` which allows a user to configure `.cursor/rules/*` or `.github/copilot-instructions.md` etc, to include additional LLM instructions from their repo. Handle cursor mdc headers.
+- [ ] Add ability to include other files in instruction templates
 

@@ -1,4 +1,4 @@
-name: Simple Examples
+name: Full Agent Flow
 
 on:
   issues:
@@ -9,10 +9,10 @@ on:
     types: [created]
 
 jobs:
-  fixme:
-    name: Fixme Issue Handler
+  todo_handler:
+    name: Todo Issue Handler
     runs-on: ubuntu-latest
-    if: github.event_name == 'issues' && github.event.label.name == 'fixme'
+    if: github.event_name == 'issues' && github.event.label.name == 'todo'
     permissions:
       contents: write
       issues: write
@@ -29,24 +29,33 @@ jobs:
         run: |
           git config --global user.name "github-actions[bot]"
           git config --global user.email "github-actions[bot]@users.noreply.github.com"
-      - name: Run Github Agent for fixme issues
+      - name: Run Github Agent for todo issues
         uses: blevinstein/github-agent@main
         with:
           treat_reply_as_comment: true
+          remove_label_on_success: todo
+          add_label_on_success: evaluate
+          remove_label_on_error: todo
+          add_label_on_error: input-needed
           instructions: |
-            The following issue has been labeled 'fixme':
+            The following issue has been labeled 'todo':
             Repository: {{repository.full_name}}
             Title: {{issue.title}}
             Number: {{issue.number}}
             Body: {{issue.body}}
             Comments: {{issue.comments}} (use the get_issue tool to get more details)
-            Please propose a fix for this issue. If possible, create a pull request that resolves it and reference the issue number in the PR description.
+            Your task is to:
+            - Attempt to resolve the issue, either by providing a direct answer, research, or by creating a pull request that addresses the issue.
+            - If you create a PR, reference the issue number in the PR description.
+            - If the task cannot be completed, or if it requires additional information or input, write a comment to that effect.
+
+            # TODO: Add any project-specific context or instructions for the agent here.
           model: anthropic/claude-3.7-sonnet
 
-  reviewme:
-    name: Reviewme PR Handler
+  evaluate_handler:
+    name: Evaluate Issue/PR Handler
     runs-on: ubuntu-latest
-    if: github.event_name == 'pull_request' && github.event.label.name == 'reviewme'
+    if: github.event_name == 'issues' && github.event.label.name == 'evaluate'
     permissions:
       contents: write
       issues: write
@@ -63,61 +72,60 @@ jobs:
         run: |
           git config --global user.name "github-actions[bot]"
           git config --global user.email "github-actions[bot]@users.noreply.github.com"
-      - name: Run Github Agent for reviewme PRs
+      - name: Run Github Agent for evaluation
         uses: blevinstein/github-agent@main
         with:
           treat_reply_as_comment: true
+          remove_label_on_success: evaluate
+          remove_label_on_error: evaluate
+          add_label_on_error: input-needed
           instructions: |
-            The following pull request has been labeled 'reviewme':
-            Repository: {{repository.full_name}}
-            Title: {{pull_request.title}}
-            Number: {{pull_request.number}}
-            Body: {{pull_request.body}}
-            Please review the code changes in this PR. If appropriate, run tests, and leave a review or comments with your feedback and suggestions.
-          model: anthropic/claude-3.7-sonnet
-
-  lookup:
-    name: Wikipedia Lookup Handler
-    runs-on: ubuntu-latest
-    if: github.event_name == 'issues' && github.event.label.name == 'lookup'
-    permissions:
-      contents: write
-      issues: write
-      pull-requests: write
-    env:
-      OPENROUTER_API_KEY: ${{ secrets.OPENROUTER_API_KEY }}
-      GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-    steps:
-      - uses: actions/checkout@v4
-      - name: Prefetch npx dependencies
-        run: |
-          npm install -g blevinstein-github-agent @modelcontextprotocol/server-filesystem @cyanheads/git-mcp-server
-      - name: Set up Git user for commits
-        run: |
-          git config --global user.name "github-actions[bot]"
-          git config --global user.email "github-actions[bot]@users.noreply.github.com"
-      - name: Run Github Agent with Wikipedia MCP
-        uses: blevinstein/github-agent@main
-        with:
-          treat_reply_as_comment: true
-          instructions: |
-            The following issue has been labeled 'lookup':
+            The following issue or PR has been labeled 'evaluate':
             Repository: {{repository.full_name}}
             Title: {{issue.title}}
             Number: {{issue.number}}
             Body: {{issue.body}}
             Comments: {{issue.comments}} (use the get_issue tool to get more details)
-            Please post a comment on this issue with the answer to any knowledge questions in the issue.
+            Your task is to:
+            - Review the work performed on this issue or PR.
+            - If the task is complete, label as 'complete'.
+            - If the task is incomplete but can be iterated on with simple tweaks, add a comment explaining what is missing and label as 'todo'.
+            - If more human input or review is needed, label as 'input-needed' and assign an appropriate reviewer.
+            - Use your best judgment to determine the correct course of action.
+
+            # TODO: List reviewers to assign for 'input-needed', and any additional evaluation criteria.
           model: anthropic/claude-3.7-sonnet
-          mcp_servers: |
-            {
-              "wikipedia-mcp": {
-                "command": "docker",
-                "args": [
-                  "run",
-                  "-i",
-                  "--rm",
-                  "mcp/wikipedia-mcp"
-                ]
-              }
-            }
+
+  pr_comment_handler:
+    name: PR Comment Handler
+    runs-on: ubuntu-latest
+    if: github.event_name == 'issue_comment' && github.event.issue.pull_request && contains(github.event.issue.labels.*.name, 'github-agent')
+    permissions:
+      contents: write
+      issues: write
+      pull-requests: write
+    env:
+      OPENROUTER_API_KEY: ${{ secrets.OPENROUTER_API_KEY }}
+      GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+    steps:
+      - uses: actions/checkout@v4
+      - name: Prefetch npx dependencies
+        run: |
+          npm install -g blevinstein-github-agent @modelcontextprotocol/server-filesystem @cyanheads/git-mcp-server
+      - name: Set up Git user for commits
+        run: |
+          git config --global user.name "github-actions[bot]"
+          git config --global user.email "github-actions[bot]@users.noreply.github.com"
+      - name: Run Github Agent for comments on LLM-created PRs
+        uses: blevinstein/github-agent@main
+        with:
+          treat_reply_as_comment: true
+          instructions: |
+            A new comment was posted on a pull request created by the agent:
+            Repository: {{repository.full_name}}
+            PR Title: {{issue.title}}
+            PR Number: {{issue.number}}
+            Comment Author: {{comment.user.login}}
+            Comment Body: {{comment.body}}
+            Please update the PR or respond to the comment as appropriate, referencing the PR number in your response.
+          model: anthropic/claude-3.7-sonnet

@@ -18,39 +18,63 @@ export function getInstructions(instructionsInput) {
   return instructionsInput;
 }
 
+async function updateLabels({ owner, repo, issue_number, add = [], remove = [] }) {
+  if (!owner || !repo || !issue_number) return;
+  const octokit = new Octokit({ auth: await getGithubToken() });
+  // Remove labels
+  for (const label of remove) {
+    try {
+      await octokit.rest.issues.removeLabel({ owner, repo, issue_number, name: label });
+      core.info(`Removed label '${label}' from ${owner}/${repo}#${issue_number}`);
+    } catch (e) {
+      // Ignore if label does not exist
+      core.debug(`Could not remove label '${label}': ${e.message}`);
+    }
+  }
+  // Add labels (can add multiple at once)
+  if (add.length > 0) {
+    try {
+      await octokit.rest.issues.addLabels({ owner, repo, issue_number, labels: add });
+      core.info(`Added labels [${add.join(', ')}] to ${owner}/${repo}#${issue_number}`);
+    } catch (e) {
+      core.warning(`Could not add labels [${add.join(', ')}]: ${e.message}`);
+    }
+  }
+}
+
 async function main() {
+  const model = core.getInput('model');
+  const instructions = getInstructions(core.getInput('instructions'));
+  const systemPromptInput = core.getInput('system_prompt');
+  const systemPrompt = systemPromptInput ? getInstructions(systemPromptInput) : DEFAULT_SYSTEM_PROMPT;
+  const treatReplyAsComment = core.getInput('treat_reply_as_comment') === 'true';
+
+  // Support additional MCP servers via input
+  let mcpServers = DEFAULT_SERVERS;
+  const mcpServersInput = core.getInput('mcp_servers');
+  if (mcpServersInput) {
+    const userServers = Object.entries(JSON.parse(mcpServersInput))
+        .map(([name, config]) => ({
+          name,
+          // TODO: Add support for sse type MCP servers
+          type: config.url ? 'http' : 'stdio',
+          ...config
+        }));
+    mcpServers = [ ...DEFAULT_SERVERS, ...userServers ];
+  }
+
+  // Gather event context from the GitHub Actions environment
+  const githubEventPath = process.env.GITHUB_EVENT_PATH;
+  let eventContext = {};
+  if (githubEventPath && fs.existsSync(githubEventPath)) {
+    const rawContext = fs.readFileSync(githubEventPath, 'utf8');
+    core.debug('Got event context: ' + rawContext);
+    eventContext = JSON.parse(rawContext);
+  }
+  core.debug('Event Context:');
+  core.debug(JSON.stringify(eventContext, null, 2));
+
   try {
-    const model = core.getInput('model');
-    const instructions = getInstructions(core.getInput('instructions'));
-    const systemPromptInput = core.getInput('system_prompt');
-    const systemPrompt = systemPromptInput ? getInstructions(systemPromptInput) : DEFAULT_SYSTEM_PROMPT;
-    const treatReplyAsComment = core.getInput('treat_reply_as_comment') === 'true';
-
-    // Support additional MCP servers via input
-    let mcpServers = DEFAULT_SERVERS;
-    const mcpServersInput = core.getInput('mcp_servers');
-    if (mcpServersInput) {
-      const userServers = Object.entries(JSON.parse(mcpServersInput))
-          .map(([name, config]) => ({
-            name,
-            // TODO: Add support for sse type MCP servers
-            type: config.url ? 'http' : 'stdio',
-            ...config
-          }));
-      mcpServers = [ ...DEFAULT_SERVERS, ...userServers ];
-    }
-
-    // Gather event context from the GitHub Actions environment
-    const githubEventPath = process.env.GITHUB_EVENT_PATH;
-    let eventContext = {};
-    if (githubEventPath && fs.existsSync(githubEventPath)) {
-      const rawContext = fs.readFileSync(githubEventPath, 'utf8');
-      core.debug('Got event context: ' + rawContext);
-      eventContext = JSON.parse(rawContext);
-    }
-    core.debug('Event Context:');
-    core.debug(JSON.stringify(eventContext, null, 2));
-
     // Render instructions with Mustache and event context
     const renderedInstructions = Mustache.render(instructions, eventContext);
     core.debug('Rendered Instructions:');
@@ -110,9 +134,42 @@ async function main() {
         core.info('No text response to post as comment.');
       }
     }
+
+    // After success, handle label changes
+    let issue_number, owner, repo;
+    if (eventContext.issue) {
+      issue_number = eventContext.issue.number;
+      owner = eventContext.repository.owner.login;
+      repo = eventContext.repository.name;
+    } else if (eventContext.pull_request) {
+      issue_number = eventContext.pull_request.number;
+      owner = eventContext.repository.owner.login;
+      repo = eventContext.repository.name;
+    }
+    if (issue_number && owner && repo) {
+      // Parse comma-separated label lists
+      const addLabels = (core.getInput('add_label_on_success') || '').split(',').map(l => l.trim()).filter(Boolean);
+      const removeLabels = (core.getInput('remove_label_on_success') || '').split(',').map(l => l.trim()).filter(Boolean);
+      await updateLabels({ owner, repo, issue_number, add: addLabels, remove: removeLabels });
+    }
     process.exit(0);
   } catch (error) {
     core.setFailed(error.message);
+    let issue_number, owner, repo;
+    if (eventContext.issue) {
+      issue_number = eventContext.issue.number;
+      owner = eventContext.repository.owner.login;
+      repo = eventContext.repository.name;
+    } else if (eventContext.pull_request) {
+      issue_number = eventContext.pull_request.number;
+      owner = eventContext.repository.owner.login;
+      repo = eventContext.repository.name;
+    }
+    if (issue_number && owner && repo) {
+      const addLabels = (core.getInput('add_label_on_error') || '').split(',').map(l => l.trim()).filter(Boolean);
+      const removeLabels = (core.getInput('remove_label_on_error') || '').split(',').map(l => l.trim()).filter(Boolean);
+      await updateLabels({ owner, repo, issue_number, add: addLabels, remove: removeLabels });
+    }
     process.exit(1);
   }
 }

@@ -53023,9 +53023,9 @@ __nccwpck_require__.a(__webpack_module__, async (__webpack_handle_async_dependen
 /* harmony import */ var _openrouter_js__WEBPACK_IMPORTED_MODULE_2__ = __nccwpck_require__(9749);
 /* harmony import */ var _mcp_js__WEBPACK_IMPORTED_MODULE_3__ = __nccwpck_require__(3875);
 /* harmony import */ var mustache__WEBPACK_IMPORTED_MODULE_4__ = __nccwpck_require__(562);
-/* harmony import */ var octokit__WEBPACK_IMPORTED_MODULE_7__ = __nccwpck_require__(5591);
+/* harmony import */ var octokit__WEBPACK_IMPORTED_MODULE_6__ = __nccwpck_require__(5591);
 /* harmony import */ var _github_js__WEBPACK_IMPORTED_MODULE_5__ = __nccwpck_require__(167);
-/* harmony import */ var _prompt_default_js__WEBPACK_IMPORTED_MODULE_6__ = __nccwpck_require__(5723);
+/* harmony import */ var _prompt_default_js__WEBPACK_IMPORTED_MODULE_7__ = __nccwpck_require__(5723);
 var __webpack_async_dependencies__ = __webpack_handle_async_dependencies__([_openrouter_js__WEBPACK_IMPORTED_MODULE_2__]);
 _openrouter_js__WEBPACK_IMPORTED_MODULE_2__ = (__webpack_async_dependencies__.then ? (await __webpack_async_dependencies__)() : __webpack_async_dependencies__)[0];
 
@@ -53048,39 +53048,63 @@ function getInstructions(instructionsInput) {
   return instructionsInput;
 }
 
+async function updateLabels({ owner, repo, issue_number, add = [], remove = [] }) {
+  if (!owner || !repo || !issue_number) return;
+  const octokit = new octokit__WEBPACK_IMPORTED_MODULE_6__/* .Octokit */ .Eg({ auth: await (0,_github_js__WEBPACK_IMPORTED_MODULE_5__/* .getGithubToken */ .v)() });
+  // Remove labels
+  for (const label of remove) {
+    try {
+      await octokit.rest.issues.removeLabel({ owner, repo, issue_number, name: label });
+      _actions_core__WEBPACK_IMPORTED_MODULE_0__.info(`Removed label '${label}' from ${owner}/${repo}#${issue_number}`);
+    } catch (e) {
+      // Ignore if label does not exist
+      _actions_core__WEBPACK_IMPORTED_MODULE_0__.debug(`Could not remove label '${label}': ${e.message}`);
+    }
+  }
+  // Add labels (can add multiple at once)
+  if (add.length > 0) {
+    try {
+      await octokit.rest.issues.addLabels({ owner, repo, issue_number, labels: add });
+      _actions_core__WEBPACK_IMPORTED_MODULE_0__.info(`Added labels [${add.join(', ')}] to ${owner}/${repo}#${issue_number}`);
+    } catch (e) {
+      _actions_core__WEBPACK_IMPORTED_MODULE_0__.warning(`Could not add labels [${add.join(', ')}]: ${e.message}`);
+    }
+  }
+}
+
 async function main() {
+  const model = _actions_core__WEBPACK_IMPORTED_MODULE_0__.getInput('model');
+  const instructions = getInstructions(_actions_core__WEBPACK_IMPORTED_MODULE_0__.getInput('instructions'));
+  const systemPromptInput = _actions_core__WEBPACK_IMPORTED_MODULE_0__.getInput('system_prompt');
+  const systemPrompt = systemPromptInput ? getInstructions(systemPromptInput) : _prompt_default_js__WEBPACK_IMPORTED_MODULE_7__/* ["default"] */ .A;
+  const treatReplyAsComment = _actions_core__WEBPACK_IMPORTED_MODULE_0__.getInput('treat_reply_as_comment') === 'true';
+
+  // Support additional MCP servers via input
+  let mcpServers = _openrouter_js__WEBPACK_IMPORTED_MODULE_2__/* .DEFAULT_SERVERS */ .H;
+  const mcpServersInput = _actions_core__WEBPACK_IMPORTED_MODULE_0__.getInput('mcp_servers');
+  if (mcpServersInput) {
+    const userServers = Object.entries(JSON.parse(mcpServersInput))
+        .map(([name, config]) => ({
+          name,
+          // TODO: Add support for sse type MCP servers
+          type: config.url ? 'http' : 'stdio',
+          ...config
+        }));
+    mcpServers = [ ..._openrouter_js__WEBPACK_IMPORTED_MODULE_2__/* .DEFAULT_SERVERS */ .H, ...userServers ];
+  }
+
+  // Gather event context from the GitHub Actions environment
+  const githubEventPath = process.env.GITHUB_EVENT_PATH;
+  let eventContext = {};
+  if (githubEventPath && fs__WEBPACK_IMPORTED_MODULE_1__.existsSync(githubEventPath)) {
+    const rawContext = fs__WEBPACK_IMPORTED_MODULE_1__.readFileSync(githubEventPath, 'utf8');
+    _actions_core__WEBPACK_IMPORTED_MODULE_0__.debug('Got event context: ' + rawContext);
+    eventContext = JSON.parse(rawContext);
+  }
+  _actions_core__WEBPACK_IMPORTED_MODULE_0__.debug('Event Context:');
+  _actions_core__WEBPACK_IMPORTED_MODULE_0__.debug(JSON.stringify(eventContext, null, 2));
+
   try {
-    const model = _actions_core__WEBPACK_IMPORTED_MODULE_0__.getInput('model');
-    const instructions = getInstructions(_actions_core__WEBPACK_IMPORTED_MODULE_0__.getInput('instructions'));
-    const systemPromptInput = _actions_core__WEBPACK_IMPORTED_MODULE_0__.getInput('system_prompt');
-    const systemPrompt = systemPromptInput ? getInstructions(systemPromptInput) : _prompt_default_js__WEBPACK_IMPORTED_MODULE_6__/* ["default"] */ .A;
-    const treatReplyAsComment = _actions_core__WEBPACK_IMPORTED_MODULE_0__.getInput('treat_reply_as_comment') === 'true';
-
-    // Support additional MCP servers via input
-    let mcpServers = _openrouter_js__WEBPACK_IMPORTED_MODULE_2__/* .DEFAULT_SERVERS */ .H;
-    const mcpServersInput = _actions_core__WEBPACK_IMPORTED_MODULE_0__.getInput('mcp_servers');
-    if (mcpServersInput) {
-      const userServers = Object.entries(JSON.parse(mcpServersInput))
-          .map(([name, config]) => ({
-            name,
-            // TODO: Add support for sse type MCP servers
-            type: config.url ? 'http' : 'stdio',
-            ...config
-          }));
-      mcpServers = [ ..._openrouter_js__WEBPACK_IMPORTED_MODULE_2__/* .DEFAULT_SERVERS */ .H, ...userServers ];
-    }
-
-    // Gather event context from the GitHub Actions environment
-    const githubEventPath = process.env.GITHUB_EVENT_PATH;
-    let eventContext = {};
-    if (githubEventPath && fs__WEBPACK_IMPORTED_MODULE_1__.existsSync(githubEventPath)) {
-      const rawContext = fs__WEBPACK_IMPORTED_MODULE_1__.readFileSync(githubEventPath, 'utf8');
-      _actions_core__WEBPACK_IMPORTED_MODULE_0__.debug('Got event context: ' + rawContext);
-      eventContext = JSON.parse(rawContext);
-    }
-    _actions_core__WEBPACK_IMPORTED_MODULE_0__.debug('Event Context:');
-    _actions_core__WEBPACK_IMPORTED_MODULE_0__.debug(JSON.stringify(eventContext, null, 2));
-
     // Render instructions with Mustache and event context
     const renderedInstructions = mustache__WEBPACK_IMPORTED_MODULE_4__/* ["default"] */ .A.render(instructions, eventContext);
     _actions_core__WEBPACK_IMPORTED_MODULE_0__.debug('Rendered Instructions:');
@@ -53125,7 +53149,7 @@ async function main() {
           repo = eventContext.repository.name;
         }
         if (issue_number && owner && repo) {
-          const octokit = new octokit__WEBPACK_IMPORTED_MODULE_7__/* .Octokit */ .Eg({ auth: await (0,_github_js__WEBPACK_IMPORTED_MODULE_5__/* .getGithubToken */ .v)() });
+          const octokit = new octokit__WEBPACK_IMPORTED_MODULE_6__/* .Octokit */ .Eg({ auth: await (0,_github_js__WEBPACK_IMPORTED_MODULE_5__/* .getGithubToken */ .v)() });
           await octokit.rest.issues.createComment({
             owner,
             repo,
@@ -53140,9 +53164,42 @@ async function main() {
         _actions_core__WEBPACK_IMPORTED_MODULE_0__.info('No text response to post as comment.');
       }
     }
+
+    // After success, handle label changes
+    let issue_number, owner, repo;
+    if (eventContext.issue) {
+      issue_number = eventContext.issue.number;
+      owner = eventContext.repository.owner.login;
+      repo = eventContext.repository.name;
+    } else if (eventContext.pull_request) {
+      issue_number = eventContext.pull_request.number;
+      owner = eventContext.repository.owner.login;
+      repo = eventContext.repository.name;
+    }
+    if (issue_number && owner && repo) {
+      // Parse comma-separated label lists
+      const addLabels = (_actions_core__WEBPACK_IMPORTED_MODULE_0__.getInput('add_label_on_success') || '').split(',').map(l => l.trim()).filter(Boolean);
+      const removeLabels = (_actions_core__WEBPACK_IMPORTED_MODULE_0__.getInput('remove_label_on_success') || '').split(',').map(l => l.trim()).filter(Boolean);
+      await updateLabels({ owner, repo, issue_number, add: addLabels, remove: removeLabels });
+    }
     process.exit(0);
   } catch (error) {
     _actions_core__WEBPACK_IMPORTED_MODULE_0__.setFailed(error.message);
+    let issue_number, owner, repo;
+    if (eventContext.issue) {
+      issue_number = eventContext.issue.number;
+      owner = eventContext.repository.owner.login;
+      repo = eventContext.repository.name;
+    } else if (eventContext.pull_request) {
+      issue_number = eventContext.pull_request.number;
+      owner = eventContext.repository.owner.login;
+      repo = eventContext.repository.name;
+    }
+    if (issue_number && owner && repo) {
+      const addLabels = (_actions_core__WEBPACK_IMPORTED_MODULE_0__.getInput('add_label_on_error') || '').split(',').map(l => l.trim()).filter(Boolean);
+      const removeLabels = (_actions_core__WEBPACK_IMPORTED_MODULE_0__.getInput('remove_label_on_error') || '').split(',').map(l => l.trim()).filter(Boolean);
+      await updateLabels({ owner, repo, issue_number, add: addLabels, remove: removeLabels });
+    }
     process.exit(1);
   }
 }
