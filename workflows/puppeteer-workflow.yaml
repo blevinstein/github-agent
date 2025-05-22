@@ -1,0 +1,55 @@
+name: Github Agent with Puppeteer
+
+on:
+  # This is a template. You will need to move this to .github/workflows/ for it to be active.
+  issues:
+    types: [opened, edited, labeled]
+
+permissions:
+  contents: write
+  pull-requests: write
+  issues: write
+
+jobs:
+  agent:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Install chrome
+        id: setup-chrome
+        uses: browser-actions/setup-chrome@v1
+        with:
+          chrome-version: 136
+
+      - name: Install browsers with Puppeteer
+        run: |
+          echo "CHROME_BIN=${{ steps.setup-chrome.outputs.chrome-path }}" >> $GITHUB_ENV
+          npx @puppeteer/browsers install chrome-headless-shell@136
+          npx @puppeteer/browsers install firefox
+
+      - name: Prefetch npx dependencies
+        run: |
+          npm install -g blevinstein-github-agent @modelcontextprotocol/server-filesystem @cyanheads/git-mcp-server @modelcontextprotocol/server-puppeteer
+
+      - name: Run Github Agent
+        uses: blevinstein/github-agent@main
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          OPENROUTER_API_KEY: ${{ secrets.OPENROUTER_API_KEY }}
+        with:
+          instructions: |
+            Please help with the issue. If it requires browser automation, use the puppeteer MCP services.
+          model: anthropic/claude-3.7-sonnet
+          mcp_servers: |
+            {
+              "puppeteer": {
+                "command": "npx",
+                "args": [
+                  "-y", 
+                  "@modelcontextprotocol/server-puppeteer"
+                ]
+              }
+            }
