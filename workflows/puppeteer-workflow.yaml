@@ -2,12 +2,8 @@ name: Github Agent with Puppeteer
 
 on:
   # This is a template. You will need to move this to .github/workflows/ for it to be active.
-  workflow_dispatch:
-    inputs:
-      instructions:
-        description: 'Instructions for the agent'
-        required: true
-        default: 'Please search the web for information about the specified topic.'
+  issues:
+    types: [opened, edited, labeled]
 
 permissions:
   contents: write
@@ -44,24 +40,11 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           OPENROUTER_API_KEY: ${{ secrets.OPENROUTER_API_KEY }}
         with:
-          instructions: ${{ github.event.inputs.instructions }}
+          instructions: |
+            Please help with the issue. If it requires browser automation, use the puppeteer MCP services.
           model: anthropic/claude-3.7-sonnet
           mcp_servers: |
             {
-              "filesystem": {
-                "command": "npx",
-                "args": [
-                  "-y",
-                  "@modelcontextprotocol/server-filesystem"
-                ]
-              },
-              "git": {
-                "command": "npx",
-                "args": [
-                  "-y",
-                  "@cyanheads/git-mcp-server"
-                ]
-              },
               "puppeteer": {
                 "command": "npx",
                 "args": [

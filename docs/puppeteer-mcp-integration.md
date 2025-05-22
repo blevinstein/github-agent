@@ -52,15 +52,6 @@ To add the Puppeteer MCP server to the GitHub Agent workflow, follow these steps
 ```yaml
 mcp_servers: |
   {
-    "wikipedia-mcp": {
-      "command": "docker",
-      "args": [
-        "run",
-        "-i",
-        "--rm",
-        "mcp/wikipedia-mcp"
-      ]
-    },
     "puppeteer": {
       "command": "npx",
       "args": [
@@ -70,6 +61,8 @@ mcp_servers: |
     }
   }
 ```
+
+Note: You only need to specify the Puppeteer server as the default servers are already included automatically.
 
 ## Using Puppeteer MCP in the agent
 
