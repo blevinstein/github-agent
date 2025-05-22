@@ -3,37 +3,6 @@ import { getGithubToken } from './github.js';
 
 const DEFAULT_MODEL = 'anthropic/claude-3.7-sonnet';
 
-// TODO: Move these somewhere that makes more sense
-export const DEFAULT_SERVERS = [
-  {
-    name: 'filesystem',
-    type: 'stdio',
-    command: 'npx',
-    args: [ '-y', '@modelcontextprotocol/server-filesystem', process.cwd() ],
-  },
-  {
-    name: 'git',
-    type: 'stdio',
-    command: 'npx',
-    args: [ '-y', '@cyanheads/git-mcp-server' ],
-  },
-  {
-    name: 'github',
-    type: 'stdio',
-    command: 'npx',
-    args: [ '-y', 'blevinstein-github-agent' ],
-    env: {
-      'GITHUB_TOKEN': await getGithubToken(),
-    }
-  },
-  {
-    name: 'fetch',
-    type: 'stdio',
-    command: 'uvx',
-    args: [ 'mcp-server-fetch' ],
-  },
-];
-
 // TODO: Add context management
 // TODO: Add cost calculation
 export async function generateChatCompletion({

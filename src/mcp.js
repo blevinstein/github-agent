@@ -1,5 +1,36 @@
 import async from 'async';
 import { MCPClient } from 'mcp-client';
+import { getGithubToken } from './github.js';
+
+export const DEFAULT_SERVERS = [
+  {
+    name: 'filesystem',
+    type: 'stdio',
+    command: 'npx',
+    args: [ '-y', '@modelcontextprotocol/server-filesystem', process.cwd() ],
+  },
+  {
+    name: 'git',
+    type: 'stdio',
+    command: 'npx',
+    args: [ '-y', '@cyanheads/git-mcp-server' ],
+  },
+  {
+    name: 'github',
+    type: 'stdio',
+    command: 'npx',
+    args: [ '-y', 'blevinstein-github-agent' ],
+    env: {
+      'GITHUB_TOKEN': await getGithubToken(),
+    }
+  },
+  {
+    name: 'fetch',
+    type: 'stdio',
+    command: 'uvx',
+    args: [ 'mcp-server-fetch' ],
+  },
+];
 
 export class MultiClient {
   constructor(clients) {

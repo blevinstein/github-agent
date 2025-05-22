@@ -1,6 +1,6 @@
 import { describe, it, expect } from 'vitest';
-import { generateChatCompletion, DEFAULT_SERVERS } from '../src/openrouter.js';
-import { MultiClient } from '../src/mcp.js';
+import { generateChatCompletion } from '../src/openrouter.js';
+import { MultiClient, DEFAULT_SERVERS } from '../src/mcp.js';
 
 import dotenv from 'dotenv';
 dotenv.config();

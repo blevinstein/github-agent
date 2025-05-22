@@ -1,7 +1,7 @@
 import * as core from '@actions/core';
 import fs from 'fs';
-import { generateChatCompletion, DEFAULT_SERVERS } from './openrouter.js';
-import { MultiClient } from './mcp.js';
+import { generateChatCompletion } from './openrouter.js';
+import { MultiClient, DEFAULT_SERVERS } from './mcp.js';
 import Mustache from 'mustache';
 import { Octokit } from 'octokit';
 import { getGithubToken } from './github.js';

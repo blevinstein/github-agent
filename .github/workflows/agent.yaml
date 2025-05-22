@@ -22,6 +22,7 @@ jobs:
       GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
     steps:
       - uses: actions/checkout@v4
+      - uses: astral-sh/setup-uv@v5
       - name: Prefetch npx dependencies
         run: |
           npm install -g blevinstein-github-agent @modelcontextprotocol/server-filesystem @cyanheads/git-mcp-server
@@ -56,6 +57,7 @@ jobs:
       GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
     steps:
       - uses: actions/checkout@v4
+      - uses: astral-sh/setup-uv@v5
       - name: Prefetch npx dependencies
         run: |
           npm install -g blevinstein-github-agent @modelcontextprotocol/server-filesystem @cyanheads/git-mcp-server
@@ -77,7 +79,7 @@ jobs:
           model: anthropic/claude-3.7-sonnet
 
   lookup:
-    name: Wikipedia Lookup Handler
+    name: Lookup Handler
     runs-on: ubuntu-latest
     if: github.event_name == 'issues' && github.event.label.name == 'lookup'
     permissions:
@@ -89,6 +91,7 @@ jobs:
       GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
     steps:
       - uses: actions/checkout@v4
+      - uses: astral-sh/setup-uv@v5
       - name: Prefetch npx dependencies
         run: |
           npm install -g blevinstein-github-agent @modelcontextprotocol/server-filesystem @cyanheads/git-mcp-server
