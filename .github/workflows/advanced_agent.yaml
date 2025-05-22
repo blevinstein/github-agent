@@ -22,6 +22,7 @@ jobs:
       GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
     steps:
       - uses: actions/checkout@v4
+      - uses: astral-sh/setup-uv@v5
       - name: Prefetch npx dependencies
         run: |
           npm install -g blevinstein-github-agent @modelcontextprotocol/server-filesystem @cyanheads/git-mcp-server
@@ -65,6 +66,7 @@ jobs:
       GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
     steps:
       - uses: actions/checkout@v4
+      - uses: astral-sh/setup-uv@v5
       - name: Prefetch npx dependencies
         run: |
           npm install -g blevinstein-github-agent @modelcontextprotocol/server-filesystem @cyanheads/git-mcp-server
@@ -109,6 +111,7 @@ jobs:
       GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
     steps:
       - uses: actions/checkout@v4
+      - uses: astral-sh/setup-uv@v5
       - name: Prefetch npx dependencies
         run: |
           npm install -g blevinstein-github-agent @modelcontextprotocol/server-filesystem @cyanheads/git-mcp-server

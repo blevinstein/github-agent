@@ -53078,6 +53078,7 @@ async function main() {
   const systemPromptInput = _actions_core__WEBPACK_IMPORTED_MODULE_0__.getInput('system_prompt');
   const systemPrompt = systemPromptInput ? getInstructions(systemPromptInput) : _prompt_default_js__WEBPACK_IMPORTED_MODULE_7__/* ["default"] */ .A;
   const treatReplyAsComment = _actions_core__WEBPACK_IMPORTED_MODULE_0__.getInput('treat_reply_as_comment') === 'true';
+  const mcpStartupTimeout = _actions_core__WEBPACK_IMPORTED_MODULE_0__.getInput('mcp_startup_timeout') || 10_000;
 
   // Support additional MCP servers via input
   let mcpServers = _openrouter_js__WEBPACK_IMPORTED_MODULE_2__/* .DEFAULT_SERVERS */ .H;
@@ -53116,7 +53117,7 @@ async function main() {
     ];
 
     _actions_core__WEBPACK_IMPORTED_MODULE_0__.debug('Creating MCP client');
-    const mcpClient = await _mcp_js__WEBPACK_IMPORTED_MODULE_3__/* .MultiClient */ .h.create(mcpServers, 15_000);
+    const mcpClient = await _mcp_js__WEBPACK_IMPORTED_MODULE_3__/* .MultiClient */ .h.create(mcpServers, mcpStartupTimeout);
 
     _actions_core__WEBPACK_IMPORTED_MODULE_0__.debug('Generating chat completion:');
     _actions_core__WEBPACK_IMPORTED_MODULE_0__.debug(JSON.stringify(messages, null, 2));
@@ -60715,8 +60716,14 @@ const DEFAULT_SERVERS = [
     env: {
       'GITHUB_TOKEN': await (0,_github_js__WEBPACK_IMPORTED_MODULE_0__/* .getGithubToken */ .v)(),
     }
-  }
-]
+  },
+  {
+    name: 'fetch',
+    type: 'stdio',
+    command: 'uvx',
+    args: [ 'mcp-server-fetch' ],
+  },
+];
 
 // TODO: Add context management
 // TODO: Add cost calculation

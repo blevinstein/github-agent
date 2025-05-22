@@ -48,6 +48,7 @@ async function main() {
   const systemPromptInput = core.getInput('system_prompt');
   const systemPrompt = systemPromptInput ? getInstructions(systemPromptInput) : DEFAULT_SYSTEM_PROMPT;
   const treatReplyAsComment = core.getInput('treat_reply_as_comment') === 'true';
+  const mcpStartupTimeout = core.getInput('mcp_startup_timeout') || 10_000;
 
   // Support additional MCP servers via input
   let mcpServers = DEFAULT_SERVERS;
@@ -86,7 +87,7 @@ async function main() {
     ];
 
     core.debug('Creating MCP client');
-    const mcpClient = await MultiClient.create(mcpServers, 15_000);
+    const mcpClient = await MultiClient.create(mcpServers, mcpStartupTimeout);
 
     core.debug('Generating chat completion:');
     core.debug(JSON.stringify(messages, null, 2));

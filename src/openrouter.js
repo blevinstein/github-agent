@@ -25,8 +25,14 @@ export const DEFAULT_SERVERS = [
     env: {
       'GITHUB_TOKEN': await getGithubToken(),
     }
-  }
-]
+  },
+  {
+    name: 'fetch',
+    type: 'stdio',
+    command: 'uvx',
+    args: [ 'mcp-server-fetch' ],
+  },
+];
 
 // TODO: Add context management
 // TODO: Add cost calculation
