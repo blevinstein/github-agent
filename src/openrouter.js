@@ -1,5 +1,4 @@
 import fetch from 'node-fetch';
-import { getGithubToken } from './github.js';
 
 const DEFAULT_MODEL = 'anthropic/claude-3.7-sonnet';
 

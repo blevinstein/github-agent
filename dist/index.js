@@ -58291,14 +58291,14 @@ __nccwpck_require__.a(__webpack_module__, async (__webpack_handle_async_dependen
 /* harmony export */ });
 /* harmony import */ var _actions_core__WEBPACK_IMPORTED_MODULE_0__ = __nccwpck_require__(7484);
 /* harmony import */ var fs__WEBPACK_IMPORTED_MODULE_1__ = __nccwpck_require__(9896);
-/* harmony import */ var _openrouter_js__WEBPACK_IMPORTED_MODULE_2__ = __nccwpck_require__(4722);
-/* harmony import */ var _mcp_js__WEBPACK_IMPORTED_MODULE_3__ = __nccwpck_require__(2978);
-/* harmony import */ var mustache__WEBPACK_IMPORTED_MODULE_4__ = __nccwpck_require__(562);
-/* harmony import */ var octokit__WEBPACK_IMPORTED_MODULE_6__ = __nccwpck_require__(5591);
-/* harmony import */ var _github_js__WEBPACK_IMPORTED_MODULE_5__ = __nccwpck_require__(167);
-/* harmony import */ var _prompt_default_js__WEBPACK_IMPORTED_MODULE_7__ = __nccwpck_require__(5723);
-var __webpack_async_dependencies__ = __webpack_handle_async_dependencies__([_mcp_js__WEBPACK_IMPORTED_MODULE_3__]);
-_mcp_js__WEBPACK_IMPORTED_MODULE_3__ = (__webpack_async_dependencies__.then ? (await __webpack_async_dependencies__)() : __webpack_async_dependencies__)[0];
+/* harmony import */ var _openrouter_js__WEBPACK_IMPORTED_MODULE_7__ = __nccwpck_require__(4722);
+/* harmony import */ var _mcp_js__WEBPACK_IMPORTED_MODULE_2__ = __nccwpck_require__(2978);
+/* harmony import */ var mustache__WEBPACK_IMPORTED_MODULE_3__ = __nccwpck_require__(562);
+/* harmony import */ var octokit__WEBPACK_IMPORTED_MODULE_5__ = __nccwpck_require__(5591);
+/* harmony import */ var _github_js__WEBPACK_IMPORTED_MODULE_4__ = __nccwpck_require__(167);
+/* harmony import */ var _prompt_default_js__WEBPACK_IMPORTED_MODULE_6__ = __nccwpck_require__(5723);
+var __webpack_async_dependencies__ = __webpack_handle_async_dependencies__([_mcp_js__WEBPACK_IMPORTED_MODULE_2__]);
+_mcp_js__WEBPACK_IMPORTED_MODULE_2__ = (__webpack_async_dependencies__.then ? (await __webpack_async_dependencies__)() : __webpack_async_dependencies__)[0];
 
 
 
@@ -58321,7 +58321,7 @@ function getInstructions(instructionsInput) {
 
 async function updateLabels({ owner, repo, issue_number, add = [], remove = [] }) {
   if (!owner || !repo || !issue_number) return;
-  const octokit = new octokit__WEBPACK_IMPORTED_MODULE_6__/* .Octokit */ .Eg({ auth: await (0,_github_js__WEBPACK_IMPORTED_MODULE_5__/* .getGithubToken */ .v)() });
+  const octokit = new octokit__WEBPACK_IMPORTED_MODULE_5__/* .Octokit */ .Eg({ auth: await (0,_github_js__WEBPACK_IMPORTED_MODULE_4__/* .getGithubToken */ .v)() });
   // Remove labels
   for (const label of remove) {
     try {
@@ -58347,12 +58347,12 @@ async function main() {
   const model = _actions_core__WEBPACK_IMPORTED_MODULE_0__.getInput('model');
   const instructions = getInstructions(_actions_core__WEBPACK_IMPORTED_MODULE_0__.getInput('instructions'));
   const systemPromptInput = _actions_core__WEBPACK_IMPORTED_MODULE_0__.getInput('system_prompt');
-  const systemPrompt = systemPromptInput ? getInstructions(systemPromptInput) : _prompt_default_js__WEBPACK_IMPORTED_MODULE_7__/* ["default"] */ .A;
+  const systemPrompt = systemPromptInput ? getInstructions(systemPromptInput) : _prompt_default_js__WEBPACK_IMPORTED_MODULE_6__/* ["default"] */ .A;
   const treatReplyAsComment = _actions_core__WEBPACK_IMPORTED_MODULE_0__.getInput('treat_reply_as_comment') === 'true';
   const mcpStartupTimeout = _actions_core__WEBPACK_IMPORTED_MODULE_0__.getInput('mcp_startup_timeout') || 10_000;
 
   // Support additional MCP servers via input
-  let mcpServers = _mcp_js__WEBPACK_IMPORTED_MODULE_3__/* .DEFAULT_SERVERS */ .H;
+  let mcpServers = _mcp_js__WEBPACK_IMPORTED_MODULE_2__/* .DEFAULT_SERVERS */ .H;
   const mcpServersInput = _actions_core__WEBPACK_IMPORTED_MODULE_0__.getInput('mcp_servers');
   if (mcpServersInput) {
     const userServers = Object.entries(JSON.parse(mcpServersInput))
@@ -58362,7 +58362,7 @@ async function main() {
           type: config.url ? 'http' : 'stdio',
           ...config
         }));
-    mcpServers = [ ..._mcp_js__WEBPACK_IMPORTED_MODULE_3__/* .DEFAULT_SERVERS */ .H, ...userServers ];
+    mcpServers = [ ..._mcp_js__WEBPACK_IMPORTED_MODULE_2__/* .DEFAULT_SERVERS */ .H, ...userServers ];
   }
 
   // Gather event context from the GitHub Actions environment
@@ -58378,7 +58378,7 @@ async function main() {
 
   try {
     // Render instructions with Mustache and event context
-    const renderedInstructions = mustache__WEBPACK_IMPORTED_MODULE_4__/* ["default"] */ .A.render(instructions, eventContext);
+    const renderedInstructions = mustache__WEBPACK_IMPORTED_MODULE_3__/* ["default"] */ .A.render(instructions, eventContext);
     _actions_core__WEBPACK_IMPORTED_MODULE_0__.debug('Rendered Instructions:');
     _actions_core__WEBPACK_IMPORTED_MODULE_0__.debug(renderedInstructions);
 
@@ -58388,11 +58388,11 @@ async function main() {
     ];
 
     _actions_core__WEBPACK_IMPORTED_MODULE_0__.debug('Creating MCP client');
-    const mcpClient = await _mcp_js__WEBPACK_IMPORTED_MODULE_3__/* .MultiClient */ .h.create(mcpServers, mcpStartupTimeout);
+    const mcpClient = await _mcp_js__WEBPACK_IMPORTED_MODULE_2__/* .MultiClient */ .h.create(mcpServers, mcpStartupTimeout);
 
     _actions_core__WEBPACK_IMPORTED_MODULE_0__.debug('Generating chat completion:');
     _actions_core__WEBPACK_IMPORTED_MODULE_0__.debug(JSON.stringify(messages, null, 2));
-    const result = await (0,_openrouter_js__WEBPACK_IMPORTED_MODULE_2__/* .generateChatCompletion */ .k)({
+    const result = await (0,_openrouter_js__WEBPACK_IMPORTED_MODULE_7__/* .generateChatCompletion */ .k)({
       messages,
       model,
       mcpClient,
@@ -58421,7 +58421,7 @@ async function main() {
           repo = eventContext.repository.name;
         }
         if (issue_number && owner && repo) {
-          const octokit = new octokit__WEBPACK_IMPORTED_MODULE_6__/* .Octokit */ .Eg({ auth: await (0,_github_js__WEBPACK_IMPORTED_MODULE_5__/* .getGithubToken */ .v)() });
+          const octokit = new octokit__WEBPACK_IMPORTED_MODULE_5__/* .Octokit */ .Eg({ auth: await (0,_github_js__WEBPACK_IMPORTED_MODULE_4__/* .getGithubToken */ .v)() });
           await octokit.rest.issues.createComment({
             owner,
             repo,
@@ -60720,10 +60720,7 @@ function fixResponseChunkedTransferBadEnding(request, errorCallback) {
 	});
 }
 
-// EXTERNAL MODULE: ./src/github.js
-var github = __nccwpck_require__(167);
 ;// CONCATENATED MODULE: ./src/openrouter.js
-
 
 
 const DEFAULT_MODEL = 'anthropic/claude-3.7-sonnet';
