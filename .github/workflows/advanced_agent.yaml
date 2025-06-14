@@ -33,7 +33,7 @@ jobs:
       - name: Run Github Agent for todo issues
         uses: blevinstein/github-agent@main
         with:
-          treat_reply_as_comment: true
+          log_actions_to_issue: true
           remove_label_on_success: todo
           add_label_on_success: evaluate
           remove_label_on_error: todo
@@ -77,7 +77,7 @@ jobs:
       - name: Run Github Agent for evaluation
         uses: blevinstein/github-agent@main
         with:
-          treat_reply_as_comment: true
+          log_actions_to_issue: true
           remove_label_on_success: evaluate
           remove_label_on_error: evaluate
           add_label_on_error: input-needed
@@ -122,7 +122,7 @@ jobs:
       - name: Run Github Agent for comments on LLM-created PRs
         uses: blevinstein/github-agent@main
         with:
-          treat_reply_as_comment: true
+          log_actions_to_issue: true
           instructions: |
             A new comment was posted on a pull request created by the agent:
             Repository: {{repository.full_name}}

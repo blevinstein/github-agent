@@ -11,8 +11,8 @@ inputs:
   system_prompt:
     description: 'System prompt to send as a system message before the user message.'
     required: false
-  treat_reply_as_comment:
-    description: "If true, post the agent's text response as a comment on the triggering issue or PR."
+  log_actions_to_issue:
+    description: "If true, post the agent's responses to the issue or PR as a comment."
     required: false
     default: 'false'
   mcp_servers:

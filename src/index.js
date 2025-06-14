@@ -47,7 +47,7 @@ async function main() {
   const instructions = getInstructions(core.getInput('instructions'));
   const systemPromptInput = core.getInput('system_prompt');
   const systemPrompt = systemPromptInput ? getInstructions(systemPromptInput) : DEFAULT_SYSTEM_PROMPT;
-  const treatReplyAsComment = core.getInput('treat_reply_as_comment') === 'true';
+  const logActionsToIssue = core.getInput('log_actions_to_issue') === 'true';
   const mcpStartupTimeout = core.getInput('mcp_startup_timeout') || 10_000;
 
   // Support additional MCP servers via input
@@ -100,13 +100,21 @@ async function main() {
     core.debug('LLM Result:');
     core.debug(JSON.stringify(result, null, 2));
 
-    // If treat_reply_as_comment is true, post a comment on the triggering issue or PR
-    if (treatReplyAsComment) {
-      // Concatenate all non-tool assistant response messages
+    // If log_actions_to_issue is true, post a comment on the triggering issue or PR
+    if (logActionsToIssue) {
+      // Format all response messages into a readable conversation
       const textResponse = (result.responseMessages || [])
-        .filter(m => m.role === 'assistant' && m.content)
-        .map(m => m.content)
-        .join('\n');
+        .map(m => {
+          if (m.role === 'assistant' && m.content) {
+            return `🤖 Assistant: ${m.content}`;
+          } else if (m.role === 'tool') {
+            return `🛠️ Tool (${m.name}): ${m.content}`;
+          } else if (m.role === 'user') {
+            return `👤 User: ${m.content}`;
+          }
+        })
+        .filter(Boolean)
+        .join('\n\n');
       if (textResponse) {
         // Find issue/PR info from event context
         let issue_number, owner, repo;

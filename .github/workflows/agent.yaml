@@ -33,7 +33,7 @@ jobs:
       - name: Run Github Agent for fixme issues
         uses: blevinstein/github-agent@main
         with:
-          treat_reply_as_comment: true
+          log_actions_to_issue: true
           instructions: |
             The following issue has been labeled 'fixme':
             Repository: {{repository.full_name}}
@@ -68,7 +68,7 @@ jobs:
       - name: Run Github Agent for reviewme PRs
         uses: blevinstein/github-agent@main
         with:
-          treat_reply_as_comment: true
+          log_actions_to_issue: true
           instructions: |
             The following pull request has been labeled 'reviewme':
             Repository: {{repository.full_name}}
@@ -102,7 +102,7 @@ jobs:
       - name: Run Github Agent with Wikipedia MCP
         uses: blevinstein/github-agent@main
         with:
-          treat_reply_as_comment: true
+          log_actions_to_issue: true
           instructions: |
             The following issue has been labeled 'lookup':
             Repository: {{repository.full_name}}
