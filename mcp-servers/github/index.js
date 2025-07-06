@@ -440,12 +440,10 @@ const server = new Server(
 
 // Set up request handlers
 server.setRequestHandler(ListToolsRequestSchema, async () => {
-  console.error('[INFO] Listing tools');
   return { tools: GITHUB_TOOLS };
 });
 
 server.setRequestHandler(CallToolRequestSchema, async (request) => {
-  console.error(`[INFO] Calling tool ${request.params.name}`);
   const toolName = request.params.name;
   const args = request.params.arguments;
 
@@ -492,7 +490,6 @@ async function runServer() {
   try {
     const transport = new StdioServerTransport();
     await server.connect(transport);
-    console.error('[INFO] Github MCP server started on stdio')
   } catch (error) {
     console.error("[FATAL] Failed to start server:", error);
     process.exit(1);
