@@ -25,7 +25,7 @@ async function updateLabels({ owner, repo, issue_number, add = [], remove = [] }
   for (const label of remove) {
     try {
       await octokit.rest.issues.removeLabel({ owner, repo, issue_number, name: label });
-      core.info(`Removed label '${label}' from ${owner}/${repo}#${issue_number}`);
+      core.info(`Removed label '${label}' from ${repo}#${issue_number}`);
     } catch (e) {
       // Ignore if label does not exist
       core.debug(`Could not remove label '${label}': ${e.message}`);
@@ -35,7 +35,7 @@ async function updateLabels({ owner, repo, issue_number, add = [], remove = [] }
   if (add.length > 0) {
     try {
       await octokit.rest.issues.addLabels({ owner, repo, issue_number, labels: add });
-      core.info(`Added labels [${add.join(', ')}] to ${owner}/${repo}#${issue_number}`);
+      core.info(`Added labels [${add.join(', ')}] to ${repo}#${issue_number}`);
     } catch (e) {
       core.warning(`Could not add labels [${add.join(', ')}]: ${e.message}`);
     }
@@ -66,18 +66,27 @@ async function main() {
 
   // Gather event context from the GitHub Actions environment
   const githubEventPath = process.env.GITHUB_EVENT_PATH;
-  let eventContext = {};
-  if (githubEventPath && fs.existsSync(githubEventPath)) {
-    const rawContext = fs.readFileSync(githubEventPath, 'utf8');
-    core.debug('Got event context: ' + rawContext);
-    eventContext = JSON.parse(rawContext);
-  }
-  core.debug('Event Context:');
-  core.debug(JSON.stringify(eventContext, null, 2));
+  const context = {
+    event: githubEventPath && fs.existsSync(githubEventPath) && JSON.parse(fs.readFileSync(githubEventPath, 'utf8')) || {},
+    github: process.env.GITHUB_CONTEXT_JSON && JSON.parse(process.env.GITHUB_CONTEXT_JSON) || {},
+    job: process.env.JOB_CONTEXT_JSON && JSON.parse(process.env.JOB_CONTEXT_JSON) || {},
+    steps: process.env.STEPS_CONTEXT_JSON && JSON.parse(process.env.STEPS_CONTEXT_JSON) || {},
+    runner: process.env.RUNNER_CONTEXT_JSON && JSON.parse(process.env.RUNNER_CONTEXT_JSON) || {},
+    env: process.env.ENV_CONTEXT_JSON && JSON.parse(process.env.ENV_CONTEXT_JSON) || {},
+    inputs: process.env.INPUTS_CONTEXT_JSON && JSON.parse(process.env.INPUTS_CONTEXT_JSON) || {},
+    needs: process.env.NEEDS_CONTEXT_JSON && JSON.parse(process.env.NEEDS_CONTEXT_JSON) || {},
+    vars: process.env.VARS_CONTEXT_JSON && JSON.parse(process.env.VARS_CONTEXT_JSON) || {},
+  };
+
+  const full_repo = context.github.repository;
+  const [ owner, repo ] = full_repo.split('/');
+
+  // TODO: If the agent creates a new issue, we should update this issue_number
+  let issue_number = (context.event.issue || context.event.pull_request)?.number;
 
   try {
     // Render instructions with Mustache and event context
-    const renderedInstructions = Mustache.render(instructions, eventContext);
+    const renderedInstructions = Mustache.render(instructions, context);
     core.debug('Rendered Instructions:');
     core.debug(renderedInstructions);
 
@@ -116,18 +125,7 @@ async function main() {
         .filter(Boolean)
         .join('\n\n');
       if (textResponse) {
-        // Find issue/PR info from event context
-        let issue_number, owner, repo;
-        if (eventContext.issue) {
-          issue_number = eventContext.issue.number;
-          owner = eventContext.repository.owner.login;
-          repo = eventContext.repository.name;
-        } else if (eventContext.pull_request) {
-          issue_number = eventContext.pull_request.number;
-          owner = eventContext.repository.owner.login;
-          repo = eventContext.repository.name;
-        }
-        if (issue_number && owner && repo) {
+        if (issue_number) {
           const octokit = new Octokit({ auth: await getGithubToken() });
           await octokit.rest.issues.createComment({
             owner,
@@ -144,19 +142,7 @@ async function main() {
       }
     }
 
-    // After success, handle label changes
-    let issue_number, owner, repo;
-    if (eventContext.issue) {
-      issue_number = eventContext.issue.number;
-      owner = eventContext.repository.owner.login;
-      repo = eventContext.repository.name;
-    } else if (eventContext.pull_request) {
-      issue_number = eventContext.pull_request.number;
-      owner = eventContext.repository.owner.login;
-      repo = eventContext.repository.name;
-    }
-    if (issue_number && owner && repo) {
-      // Parse comma-separated label lists
+    if (issue_number) {
       const addLabels = (core.getInput('add_label_on_success') || '').split(',').map(l => l.trim()).filter(Boolean);
       const removeLabels = (core.getInput('remove_label_on_success') || '').split(',').map(l => l.trim()).filter(Boolean);
       await updateLabels({ owner, repo, issue_number, add: addLabels, remove: removeLabels });
@@ -164,17 +150,7 @@ async function main() {
     process.exit(0);
   } catch (error) {
     core.setFailed(error.message);
-    let issue_number, owner, repo;
-    if (eventContext.issue) {
-      issue_number = eventContext.issue.number;
-      owner = eventContext.repository.owner.login;
-      repo = eventContext.repository.name;
-    } else if (eventContext.pull_request) {
-      issue_number = eventContext.pull_request.number;
-      owner = eventContext.repository.owner.login;
-      repo = eventContext.repository.name;
-    }
-    if (issue_number && owner && repo) {
+    if (issue_number) {
       const addLabels = (core.getInput('add_label_on_error') || '').split(',').map(l => l.trim()).filter(Boolean);
       const removeLabels = (core.getInput('remove_label_on_error') || '').split(',').map(l => l.trim()).filter(Boolean);
       await updateLabels({ owner, repo, issue_number, add: addLabels, remove: removeLabels });

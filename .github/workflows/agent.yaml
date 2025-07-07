@@ -36,11 +36,11 @@ jobs:
           log_actions_to_issue: true
           instructions: |
             The following issue has been labeled 'fixme':
-            Repository: {{repository.full_name}}
-            Title: {{issue.title}}
-            Number: {{issue.number}}
-            Body: {{issue.body}}
-            Comments: {{issue.comments}} (use the get_issue tool to get more details)
+            Repository: {{github.repository}}
+            Title: {{event.issue.title}}
+            Number: {{event.issue.number}}
+            Body: {{event.issue.body}}
+            Comments: {{event.issue.comments}} (use the get_issue tool to get more details)
             Please propose a fix for this issue. If possible, create a pull request that resolves it and reference the issue number in the PR description.
           model: anthropic/claude-3.7-sonnet
 
@@ -71,10 +71,10 @@ jobs:
           log_actions_to_issue: true
           instructions: |
             The following pull request has been labeled 'reviewme':
-            Repository: {{repository.full_name}}
-            Title: {{pull_request.title}}
-            Number: {{pull_request.number}}
-            Body: {{pull_request.body}}
+            Repository: {{github.repository}}
+            Title: {{event.pull_request.title}}
+            Number: {{event.pull_request.number}}
+            Body: {{event.pull_request.body}}
             Please review the code changes in this PR. If appropriate, run tests, and leave a review or comments with your feedback and suggestions.
           model: anthropic/claude-3.7-sonnet
 
@@ -105,11 +105,11 @@ jobs:
           log_actions_to_issue: true
           instructions: |
             The following issue has been labeled 'lookup':
-            Repository: {{repository.full_name}}
-            Title: {{issue.title}}
-            Number: {{issue.number}}
-            Body: {{issue.body}}
-            Comments: {{issue.comments}} (use the get_issue tool to get more details)
+            Repository: {{github.repository}}
+            Title: {{event.issue.title}}
+            Number: {{event.issue.number}}
+            Body: {{event.issue.body}}
+            Comments: {{event.issue.comments}} (use the get_issue tool to get more details)
             Please post a comment on this issue with the answer to any knowledge questions in the issue.
           model: anthropic/claude-3.7-sonnet
           mcp_servers: |

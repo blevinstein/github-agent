@@ -39,3 +39,12 @@ runs:
 branding:
   icon: 'zap'
   color: 'blue' 
+env:
+  GITHUB_CONTEXT_JSON: ${{ toJson(github) }}
+  JOB_CONTEXT_JSON: ${{ toJson(job) }}
+  STEPS_CONTEXT_JSON: ${{ toJson(steps) }}
+  RUNNER_CONTEXT_JSON: ${{ toJson(runner) }}
+  ENV_CONTEXT_JSON: ${{ toJson(env) }}
+  INPUTS_CONTEXT_JSON: ${{ toJson(inputs) }}
+  NEEDS_CONTEXT_JSON: ${{ toJson(needs) }}
+  VARS_CONTEXT_JSON: ${{ toJson(vars) }}

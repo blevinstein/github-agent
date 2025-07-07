@@ -40,11 +40,11 @@ jobs:
           add_label_on_error: input-needed
           instructions: |
             The following issue has been labeled 'todo':
-            Repository: {{repository.full_name}}
-            Title: {{issue.title}}
-            Number: {{issue.number}}
-            Body: {{issue.body}}
-            Comments: {{issue.comments}} (use the get_issue tool to get more details)
+            Repository: {{github.repository}}
+            Title: {{event.issue.title}}
+            Number: {{event.issue.number}}
+            Body: {{event.issue.body}}
+            Comments: {{event.issue.comments}} (use the get_issue tool to get more details)
             Your task is to:
             - Attempt to resolve the issue, either by providing a direct answer, research, or by creating a pull request that addresses the issue.
             - If you create a PR, reference the issue number in the PR description.
@@ -83,11 +83,11 @@ jobs:
           add_label_on_error: input-needed
           instructions: |
             The following issue or PR has been labeled 'evaluate':
-            Repository: {{repository.full_name}}
-            Title: {{issue.title}}
-            Number: {{issue.number}}
-            Body: {{issue.body}}
-            Comments: {{issue.comments}} (use the get_issue tool to get more details)
+            Repository: {{github.repository}}
+            Title: {{event.issue.title}}
+            Number: {{event.issue.number}}
+            Body: {{event.issue.body}}
+            Comments: {{event.issue.comments}} (use the get_issue tool to get more details)
             Your task is to:
             - Review the work performed on this issue or PR.
             - If the task is complete, label as 'complete'.
@@ -125,10 +125,10 @@ jobs:
           log_actions_to_issue: true
           instructions: |
             A new comment was posted on a pull request created by the agent:
-            Repository: {{repository.full_name}}
-            PR Title: {{issue.title}}
-            PR Number: {{issue.number}}
-            Comment Author: {{comment.user.login}}
-            Comment Body: {{comment.body}}
+            Repository: {{github.repository}}
+            PR Title: {{event.pull_request.title}}
+            PR Number: {{event.pull_request.number}}
+            Comment Author: {{event.comment.user.login}}
+            Comment Body: {{event.comment.body}}
             Please update the PR or respond to the comment as appropriate, referencing the PR number in your response.
           model: anthropic/claude-3.7-sonnet

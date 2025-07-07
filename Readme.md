@@ -17,7 +17,7 @@ By default, the agent can access your repo's filesystem, git, and GitHub API. Yo
 
 - **No scripting required:** Describe what you want in plain English. The agent figures out the steps.
 - **Flexible automation:** Automate bug fixes, code reviews, documentation, and more—using natural language.
-- **Context-aware:** Reference GitHub event data (issue/PR details, comments, etc.) in your instructions using mustachejs syntax.
+- **Context-aware:** Reference GitHub contexts and event data in your instructions using mustachejs syntax.
 - **Extensible:** Add custom MCP tools (e.g., Wikipedia lookup, browser automation, Docker) to expand the agent's capabilities.
 
 ---
@@ -82,8 +82,11 @@ jobs:
 
 ## Backlog
 
+
+- [ ] Add setting `rules_path` which allows a user to configure `.cursor/rules/*` or `.github/copilot-instructions.md` etc, to include additional LLM instructions from their repo. Handle cursor mdc headers.
+- [ ] Add ability to split instruction templates into multiple files
+
+## Other MCP examples
+
 - [ ] Integrate puppeteer to allow the agent to use a browser https://github.com/modelcontextprotocol/servers/tree/main/src/puppeteer
 - [ ] Integrate docker to allow the agent to run local development containers https://github.com/ckreiling/mcp-server-docker
-- [ ] Add setting `rules_path` which allows a user to configure `.cursor/rules/*` or `.github/copilot-instructions.md` etc, to include additional LLM instructions from their repo. Handle cursor mdc headers.
-- [ ] Add ability to include other files in instruction templates
-
