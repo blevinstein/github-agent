@@ -60721,8 +60721,8 @@ async function generateChatCompletion({
   mcpClient,
   logger,
 }) {
-  const { OPENROUTER_API_KEY } = process.env;
-  if (!OPENROUTER_API_KEY) throw new Error('Missing OPENROUTER_API_KEY in environment');
+  const { OPENROUTER_API_KEY, OPENROUTER_API_URL } = process.env;
+  if (!OPENROUTER_API_KEY || !OPENROUTER_API_URL) throw new Error('Missing OPENROUTER_API_KEY and OPENROUTER_API_URL in environment');
 
   if (mcpClient) {
     const mcpTools = await mcpClient.getAllTools();
@@ -60755,7 +60755,7 @@ async function generateChatCompletion({
   let responseMessages = [];
   let finishReason;
   do {
-    const response = await fetch('https://openrouter.ai/api/v1/chat/completions', {
+    const response = await fetch(OPENROUTER_API_URL || 'https://openrouter.ai/api/v1/chat/completions', {
       method: 'POST',
       headers: {
         Authorization: `Bearer ${OPENROUTER_API_KEY}`,
